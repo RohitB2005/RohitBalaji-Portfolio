@@ -230,6 +230,52 @@ footer {
     background-color: #00c767;
 }
 
+#contact {
+    text-align: center; /* Center all the content */
+}
+
+#contact p {
+    max-width: 600px; /* Keep the paragraph from getting too wide */
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 3rem; /* Add space below the paragraph */
+}
+
+.social-links-container {
+    display: flex;
+    justify-content: center;
+    gap: 2rem; /* The space between the icons */
+}
+
+.social-link {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 60px;
+    height: 60px;
+    background-color: #1c2a3a; /* Same as your card backgrounds */
+    border: 1px solid #3c4a5a;
+    border-radius: 50%; /* Makes the links circular */
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.social-link i {
+    color: #fff;
+    font-size: 2.8rem; /* Size of the icon itself */
+    transition: color 0.3s ease;
+}
+
+/* Hover Effect */
+.social-link:hover {
+    background-color: #00E676; /* Use your green accent color on hover */
+    border-color: #00E676;
+}
+
+.social-link:hover i {
+    color: #090A0F; /* The dark background color for contrast */
+}
+
 #stars {
   width: 1px;
   height: 1px;
