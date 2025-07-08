@@ -1,0 +1,527 @@
+@import url('https://fonts.googleapis.com/css?family=Quicksand:400,500,700');
+html,
+body {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Quicksand", sans-serif;
+    font-size: 62.5%;
+    font-size: 10px;
+}
+
+body {
+    /* This creates the dark blue/black gradient background */
+    background: radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%);
+}
+
+html {
+    /* We need this to make the background fill the whole page */
+    height: 100%;
+}
+
+main {
+    position: relative; /* Establishes a stacking context */
+    z-index: 1; /* Ensures content is above the z-index: -1 stars */
+    color: #FFF; /* Makes all text inside <main> white */
+    padding-top: 120px; /* Pushes content down to clear the fixed navbar */
+    max-width: 900px; /* Makes the text easier to read on wide screens */
+    margin: 0 auto; /* Centers the content block */
+    padding-left: 2rem; /* Adds some space on the sides */
+    padding-right: 2rem; /* Adds some space on the sides */
+}
+
+main section {
+    margin-bottom: 5rem; /* Adds space between your "About Me", "Projects" sections */
+}
+
+main h2 {
+    font-size: 4rem;
+    text-align: center;
+}
+
+main p {
+    font-size: 1.8rem; /* A better, more readable font size */
+    line-height: 1.7; /* Improves readability */
+}
+
+footer {
+    position: relative; /* Do the same for the footer */
+    z-index: 1;
+    color: #fff;
+    text-align: center;
+    padding: 2rem;
+}
+
+.profile-photo {
+    display: block; /* Allows us to use margin auto for centering */
+    width: 200px;
+    height: 200px;
+    border-radius: 50%; /* This makes the image a circle */
+    border: 4px solid #fff; /* A nice white border */
+    margin: 3rem auto 4rem; /* Adds space top/bottom and centers it */
+    object-fit: cover; /* Prevents the image from being stretched */
+}
+
+.tech-stack-container {
+    display: flex; /* This is the key to the horizontal layout */
+    justify-content: center; /* Centers the cards */
+    flex-wrap: wrap; /* Allows cards to stack on smaller screens */
+    gap: 2rem; /* The space between cards */
+    margin-top: 3rem;
+}
+
+/* Individual tech card styling */
+.tech-card {
+    background-color: #1c2a3a; /* A slightly lighter shade than the background */
+    border-radius: 10px; /* Rounded corners */
+    padding: 2rem 3rem;
+    width: 150px;
+    text-align: center;
+    border: 1px solid #3c4a5a;
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Smooth transition for hover */
+}
+
+.tech-card:hover {
+    transform: translateY(-8px); /* Lifts the card up on hover */
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2); /* Adds a subtle shadow */
+}
+
+/* Styling for the logos inside the cards */
+.tech-logo {
+    width: 70px;
+    height: 70px;
+    margin-bottom: 1rem;
+}
+
+/* Text style for the technology name */
+.tech-card p {
+    margin: 0; /* Removes default paragraph margin */
+    font-size: 1.6rem;
+    font-weight: 500;
+}
+
+
+#stars {
+  width: 1px;
+  height: 1px;
+  background: transparent;
+  /* This is the compiled result of the SCSS function - a long list of stars */
+  box-shadow: 695px 1330px #FFF, 1594px 1823px #FFF, 1431px 642px #FFF, 128px 1234px #FFF, 1246px 1630px #FFF, 946px 148px #FFF, 737px 432px #FFF, 1540px 1018px #FFF, 1928px 173px #FFF, 1373px 1469px #FFF, 329px 1317px #FFF, 1993px 1199px #FFF, 1829px 1272px #FFF, 1488px 1693px #FFF, 882px 1455px #FFF, 893px 83px #FFF, 1269px 1310px #FFF, 1194px 1334px #FFF, 1266px 1731px #FFF, 1152px 1974px #FFF, 547px 1416px #FFF, 105px 185px #FFF, 1284px 1726px #FFF, 1113px 1238px #FFF, 42px 1085px #FFF, 1291px 1999px #FFF, 1242px 1992px #FFF, 1089px 1673px #FFF, 583px 1629px #FFF, 73px 1813px #FFF, 59px 1004px #FFF, 1413px 1146px #FFF, 1143px 1568px #FFF, 835px 1222px #FFF, 1851px 539px #FFF, 1184px 199px #FFF, 1788px 843px #FFF, 1251px 1899px #FFF, 508px 740px #FFF, 1813px 395px #FFF, 1003px 171px #FFF, 1183px 36px #FFF, 1137px 1101px #FFF, 1500px 1215px #FFF, 327px 1150px #FFF, 1639px 1118px #FFF, 1354px 1335px #FFF, 792px 1675px #FFF, 1749px 669px #FFF;
+  animation: animStar 50s linear infinite;
+  position: fixed; /* Use fixed positioning so it stays put */
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: -1; /* Place it behind all other content */
+}
+
+#stars:after {
+  content: " ";
+  position: absolute;
+  top: 2000px;
+  width: 1px;
+  height: 1px;
+  background: transparent;
+  box-shadow: 695px 1330px #FFF, 1594px 1823px #FFF, 1431px 642px #FFF, 128px 1234px #FFF, 1246px 1630px #FFF, 946px 148px #FFF, 737px 432px #FFF, 1540px 1018px #FFF, 1928px 173px #FFF, 1373px 1469px #FFF, 329px 1317px #FFF, 1993px 1199px #FFF, 1829px 1272px #FFF, 1488px 1693px #FFF, 882px 1455px #FFF, 893px 83px #FFF, 1269px 1310px #FFF, 1194px 1334px #FFF, 1266px 1731px #FFF, 1152px 1974px #FFF, 547px 1416px #FFF, 105px 185px #FFF, 1284px 1726px #FFF, 1113px 1238px #FFF, 42px 1085px #FFF, 1291px 1999px #FFF, 1242px 1992px #FFF, 1089px 1673px #FFF, 583px 1629px #FFF, 73px 1813px #FFF, 59px 1004px #FFF, 1413px 1146px #FFF, 1143px 1568px #FFF, 835px 1222px #FFF, 1851px 539px #FFF, 1184px 199px #FFF, 1788px 843px #FFF, 1251px 1899px #FFF, 508px 740px #FFF, 1813px 395px #FFF, 1003px 171px #FFF, 1183px 36px #FFF, 1137px 1101px #FFF, 1500px 1215px #FFF, 327px 1150px #FFF, 1639px 1118px #FFF, 1354px 1335px #FFF, 792px 1675px #FFF, 1749px 669px #FFF;
+}
+
+#stars2 {
+  width: 2px;
+  height: 2px;
+  background: transparent;
+  box-shadow: 110px 1833px #FFF, 1310px 1941px #FFF, 1475px 827px #FFF, 1715px 1008px #FFF, 1312px 1676px #FFF, 1324px 1012px #FFF, 893px 1024px #FFF, 1221px 1976px #FFF, 1205px 493px #FFF, 658px 1944px #FFF, 1059px 1683px #FFF, 1121px 1754px #FFF, 91px 1805px #FFF, 843px 1565px #FFF, 132px 421px #FFF, 915px 1369px #FFF, 495px 1445px #FFF, 1017px 1282px #FFF, 1344px 1203px #FFF, 1877px 62px #FFF, 1547px 1893px #FFF, 401px 1238px #FFF, 1061px 116px #FFF, 781px 1896px #FFF, 575px 1904px #FFF;
+  animation: animStar 100s linear infinite;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: -1;
+}
+
+#stars2:after {
+  content: " ";
+  position: absolute;
+  top: 2000px;
+  width: 2px;
+  height: 2px;
+  background: transparent;
+  box-shadow: 110px 1833px #FFF, 1310px 1941px #FFF, 1475px 827px #FFF, 1715px 1008px #FFF, 1312px 1676px #FFF, 1324px 1012px #FFF, 893px 1024px #FFF, 1221px 1976px #FFF, 1205px 493px #FFF, 658px 1944px #FFF, 1059px 1683px #FFF, 1121px 1754px #FFF, 91px 1805px #FFF, 843px 1565px #FFF, 132px 421px #FFF, 915px 1369px #FFF, 495px 1445px #FFF, 1017px 1282px #FFF, 1344px 1203px #FFF, 1877px 62px #FFF, 1547px 1893px #FFF, 401px 1238px #FFF, 1061px 116px #FFF, 781px 1896px #FFF, 575px 1904px #FFF;
+}
+
+#stars3 {
+  width: 3px;
+  height: 3px;
+  background: transparent;
+  box-shadow: 1913px 1032px #FFF, 1928px 111px #FFF, 1014px 1735px #FFF, 1232px 1386px #FFF, 1687px 59px #FFF, 1630px 1423px #FFF, 1485px 508px #FFF, 1334px 1901px #FFF, 1216px 1428px #FFF, 1103px 1308px #FFF;
+  animation: animStar 150s linear infinite;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: -1;
+}
+
+#stars3:after {
+  content: " ";
+  position: absolute;
+  top: 2000px;
+  width: 3px;
+  height: 3px;
+  background: transparent;
+  box-shadow: 1913px 1032px #FFF, 1928px 111px #FFF, 1014px 1735px #FFF, 1232px 1386px #FFF, 1687px 59px #FFF, 1630px 1423px #FFF, 1485px 508px #FFF, 1334px 1901px #FFF, 1216px 1428px #FFF, 1103px 1308px #FFF;
+}
+
+@keyframes animStar {
+  from {
+    transform: translateY(0px);
+  }
+  to {
+    transform: translateY(-2000px);
+  }
+}
+
+/* Navbar section */
+
+.nav {
+    width: 100%;
+    height: 65px;
+    position: fixed;
+    line-height: 65px;
+    text-align: center;
+    z-index: 10;
+}
+
+.nav div.logo {
+    float: left;
+    width: auto;
+    height: auto;
+    padding-left: 3rem;
+}
+
+.nav div.logo a {
+    text-decoration: none;
+    color: #fff;
+    font-size: 2.5rem;
+}
+
+.nav div.logo a:hover {
+    color: #00E676;
+}
+
+.nav div.main_list {
+    height: 65px;
+    float: right;
+}
+
+.nav div.main_list ul {
+    width: 100%;
+    height: 65px;
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.nav div.main_list ul li {
+    width: auto;
+    height: 65px;
+    padding: 0;
+    padding-right: 3rem;
+}
+
+.nav div.main_list ul li a {
+    text-decoration: none;
+    color: #fff;
+    line-height: 65px;
+    font-size: 2.4rem;
+}
+
+.nav div.main_list ul li a:hover {
+    color: #00E676;
+}
+
+
+
+.navTrigger {
+    display: none;
+}
+
+.nav {
+    padding-top: 20px;
+    padding-bottom: 20px;
+    -webkit-transition: all 0.4s ease;
+    transition: all 0.4s ease;
+}
+
+
+/* Media qurey section */
+
+@media screen and (min-width: 768px) and (max-width: 1024px) {
+    .container {
+        margin: 0;
+    }
+}
+
+@media screen and (max-width:768px) {
+    .navTrigger {
+        display: block;
+    }
+    .nav div.logo {
+        margin-left: 15px;
+    }
+    .nav div.main_list {
+        width: 100%;
+        height: 0;
+        overflow: hidden;
+    }
+    .nav div.show_list {
+        height: auto;
+        display: none;
+    }
+    .nav div.main_list ul {
+        flex-direction: column;
+        width: 100%;
+        height: 100vh;
+        right: 0;
+        left: 0;
+        bottom: 0;
+        background-color: #111;
+        /*same background color of navbar*/
+        background-position: center top;
+    }
+    .nav div.main_list ul li {
+        width: 100%;
+        text-align: right;
+    }
+    .nav div.main_list ul li a {
+        text-align: center;
+        width: 100%;
+        font-size: 3rem;
+        padding: 20px;
+    }
+    .nav div.media_button {
+        display: block;
+    }
+}
+
+
+/* Animation */
+/* Inspiration taken from Dicson https://codemyui.com/simple-hamburger-menu-x-mark-animation/ */
+
+.navTrigger {
+    cursor: pointer;
+    width: 30px;
+    height: 25px;
+    margin: auto;
+    position: absolute;
+    right: 30px;
+    top: 0;
+    bottom: 0;
+}
+
+.navTrigger i {
+    background-color: #fff;
+    border-radius: 2px;
+    content: '';
+    display: block;
+    width: 100%;
+    height: 4px;
+}
+
+.navTrigger i:nth-child(1) {
+    -webkit-animation: outT 0.8s backwards;
+    animation: outT 0.8s backwards;
+    -webkit-animation-direction: reverse;
+    animation-direction: reverse;
+}
+
+.navTrigger i:nth-child(2) {
+    margin: 5px 0;
+    -webkit-animation: outM 0.8s backwards;
+    animation: outM 0.8s backwards;
+    -webkit-animation-direction: reverse;
+    animation-direction: reverse;
+}
+
+.navTrigger i:nth-child(3) {
+    -webkit-animation: outBtm 0.8s backwards;
+    animation: outBtm 0.8s backwards;
+    -webkit-animation-direction: reverse;
+    animation-direction: reverse;
+}
+
+.navTrigger.active i:nth-child(1) {
+    -webkit-animation: inT 0.8s forwards;
+    animation: inT 0.8s forwards;
+}
+
+.navTrigger.active i:nth-child(2) {
+    -webkit-animation: inM 0.8s forwards;
+    animation: inM 0.8s forwards;
+}
+
+.navTrigger.active i:nth-child(3) {
+    -webkit-animation: inBtm 0.8s forwards;
+    animation: inBtm 0.8s forwards;
+}
+
+@-webkit-keyframes inM {
+    50% {
+        -webkit-transform: rotate(0deg);
+    }
+    100% {
+        -webkit-transform: rotate(45deg);
+    }
+}
+
+@keyframes inM {
+    50% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(45deg);
+    }
+}
+
+@-webkit-keyframes outM {
+    50% {
+        -webkit-transform: rotate(0deg);
+    }
+    100% {
+        -webkit-transform: rotate(45deg);
+    }
+}
+
+@keyframes outM {
+    50% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(45deg);
+    }
+}
+
+@-webkit-keyframes inT {
+    0% {
+        -webkit-transform: translateY(0px) rotate(0deg);
+    }
+    50% {
+        -webkit-transform: translateY(9px) rotate(0deg);
+    }
+    100% {
+        -webkit-transform: translateY(9px) rotate(135deg);
+    }
+}
+
+@keyframes inT {
+    0% {
+        transform: translateY(0px) rotate(0deg);
+    }
+    50% {
+        transform: translateY(9px) rotate(0deg);
+    }
+    100% {
+        transform: translateY(9px) rotate(135deg);
+    }
+}
+
+@-webkit-keyframes outT {
+    0% {
+        -webkit-transform: translateY(0px) rotate(0deg);
+    }
+    50% {
+        -webkit-transform: translateY(9px) rotate(0deg);
+    }
+    100% {
+        -webkit-transform: translateY(9px) rotate(135deg);
+    }
+}
+
+@keyframes outT {
+    0% {
+        transform: translateY(0px) rotate(0deg);
+    }
+    50% {
+        transform: translateY(9px) rotate(0deg);
+    }
+    100% {
+        transform: translateY(9px) rotate(135deg);
+    }
+}
+
+@-webkit-keyframes inBtm {
+    0% {
+        -webkit-transform: translateY(0px) rotate(0deg);
+    }
+    50% {
+        -webkit-transform: translateY(-9px) rotate(0deg);
+    }
+    100% {
+        -webkit-transform: translateY(-9px) rotate(135deg);
+    }
+}
+
+@keyframes inBtm {
+    0% {
+        transform: translateY(0px) rotate(0deg);
+    }
+    50% {
+        transform: translateY(-9px) rotate(0deg);
+    }
+    100% {
+        transform: translateY(-9px) rotate(135deg);
+    }
+}
+
+@-webkit-keyframes outBtm {
+    0% {
+        -webkit-transform: translateY(0px) rotate(0deg);
+    }
+    50% {
+        -webkit-transform: translateY(-9px) rotate(0deg);
+    }
+    100% {
+        -webkit-transform: translateY(-9px) rotate(135deg);
+    }
+}
+
+@keyframes outBtm {
+    0% {
+        transform: translateY(0px) rotate(0deg);
+    }
+    50% {
+        transform: translateY(-9px) rotate(0deg);
+    }
+    100% {
+        transform: translateY(-9px) rotate(135deg);
+    }
+}
+
+.affix {
+    padding: 0;
+    background-color: #111;
+}
+
+
+
+
+
+
+.myH2 {
+	text-align:center;
+	font-size: 4rem;
+}
+.myP {
+	text-align: justify;
+	padding-left:15%;
+	padding-right:15%;
+	font-size: 20px;
+}
+@media all and (max-width:700px){
+	.myP {
+		padding:2%;
+	}
+}
