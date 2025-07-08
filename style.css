@@ -17,6 +17,8 @@ body {
 html {
     /* We need this to make the background fill the whole page */
     height: 100%;
+    scroll-behavior: smooth;
+    scroll-padding-top: 100px; 
 }
 
 main {
@@ -100,6 +102,46 @@ footer {
     font-weight: 500;
 }
 
+.skills-container {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem; /* Reduced the gap slightly */
+    margin-top: 3rem;
+}
+
+/* Styling for each individual skill card */
+.skill-card {
+    background-color: #1c2a3a;
+    border-radius: 10px;
+    border: 1px solid #3c4a5a;
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    
+    /* --- Key Changes Below --- */
+    padding: 2rem; /* Reduced padding to make the card smaller */
+    flex-basis: 300px; /* Slightly reduced the base width */
+}
+
+.skill-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Styling for the skill title (e.g., "Leadership") */
+.skill-card h3 {
+    font-size: 2rem; /* Smaller title */
+    color: #00E676;
+    margin-top: 0;
+    margin-bottom: 1rem; /* Less space below the title */
+}
+
+/* Styling for the skill description paragraph */
+.skill-card p {
+    font-size: 1.5rem; /* Slightly smaller description text */
+    line-height: 1.5; /* Tighter line height */
+    color: #cdd5e0;
+    margin-bottom: 0;
+}
 
 #stars {
   width: 1px;
@@ -192,6 +234,10 @@ footer {
     line-height: 65px;
     text-align: center;
     z-index: 10;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    -webkit-transition: all 0.4s ease;
+    transition: all 0.4s ease;
 }
 
 .nav div.logo {
@@ -247,13 +293,6 @@ footer {
 
 .navTrigger {
     display: none;
-}
-
-.nav {
-    padding-top: 20px;
-    padding-bottom: 20px;
-    -webkit-transition: all 0.4s ease;
-    transition: all 0.4s ease;
 }
 
 
