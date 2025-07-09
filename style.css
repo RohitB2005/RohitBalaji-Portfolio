@@ -11,7 +11,7 @@ body {
 
 body {
     /* This creates the dark blue/black gradient background */
-    background: radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%);
+    background: radial-gradient(ellipse at center, #1B2735 0%, #090A0F 100%);
 }
 
 html {
