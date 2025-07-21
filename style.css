@@ -148,6 +148,7 @@ footer {
     justify-content: center;
     gap: 2.5rem; /* Space between cards */
     margin-top: 3rem;
+    max-width: 1000px;
 }
 
 .project-card {
@@ -156,7 +157,8 @@ footer {
     border: 1px solid #3c4a5a;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     overflow: hidden; /* This keeps the image corners rounded */
-    flex-basis: 400px; /* Base width of the card */
+    flex-basis: 400px;
+    flex: 0 0 400px; /* Base width of the card */
     max-width: 90%; /* Ensures it looks good on mobile */
     display: flex;
     flex-direction: column;
