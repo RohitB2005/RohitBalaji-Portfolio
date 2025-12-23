@@ -122,6 +122,10 @@ footer {
     width: 70px;
     height: 70px;
     margin-bottom: 1rem;
+    object-fit: contain;
+}
+.javafx-logo {
+    transform: scale(1.5); 
 }
 
 .tech-card p {
