@@ -26,6 +26,7 @@
                     <ul class="navlinks">
                         <li><a href="#about">About</a></li>
                         <li><a href="#tech-stack">Skillset</a></li>
+                        <li><a href="#certifications">Certifications</a></li>
                         <li><a href="#projects">Projects</a></li>
                         <li><a href="#contact">Connect</a></li>
                     </ul>
@@ -47,9 +48,9 @@
             <h2>About Me</h2>
             <img src="images/profilephoto.jpg" draggable = "false" alt="A photo of Rohit Balaji" class="profile-photo">
             <p>
-                Hi, I'm Rohit Balaji. I’m a Part II Software Engineering student at the University of Auckland with a passion for building immersive full-stack experiences. Inspired by the depth of virtual worlds in gaming, I transitioned from playing to creating, focusing on seamless front-end interfaces and robust back-end systems.
+                Hi, I'm Rohit Balaji. I'm a Part II Software Engineering student at the University of Auckland with a passion for building immersive full-stack experiences. Inspired by the depth of virtual worlds in gaming, I transitioned from playing to creating, focusing on seamless front-end interfaces and robust back-end systems.
             <p>
-                I build tools to solve real-world frustrations. Driven by empathy and adaptability, I strive to create software that makes life easier for users. I actively explore emerging technologies to ensure I’m building the most efficient and effective solutions possible.
+                I build tools to solve real-world frustrations. Driven by empathy and adaptability, I strive to create software that makes life easier for users. I actively explore emerging technologies to ensure I'm building the most efficient and effective solutions possible.
             </p>
         </section>
         <section id="tech-stack">
@@ -112,6 +113,29 @@
                     <h3>Agile Development</h3>
                     <p>Proficient in leading Scrum sprints, managing backlogs via Jira, and utilizing Git for version control in collaborative, cross-functional team environments.</p>
                 </div>
+            </div>
+        </section>
+
+        <section id="certifications">
+            <div class="w-full flex flex-col items-center justify-center pb-20">
+                 <h2 style="margin-bottom: 2rem;">Certifications</h2>
+                <!-- Controls -->
+                <div class="cert-header-controls">
+                    <div class="cert-view-controls">
+                        <button onclick="setView('3d')" id="btn-3d" class="cert-view-btn">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"></path><path d="M2 17l10 5 10-5"></path><path d="M2 12l10 5 10-5"></path></svg>
+                            3D Stack
+                        </button>
+                        <button onclick="setView('grid')" id="btn-grid" class="cert-view-btn">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                            Grid View
+                        </button>
+                    </div>
+                </div>
+
+                <div class="shelf-hint" id="shelf-hint">Click a certificate to select or unselect</div>
+
+                <div id="scene-container"></div>
             </div>
         </section>
     
@@ -230,7 +254,7 @@
                             <!-- Link to your GitHub repository for this project -->
                             <a href="https://github.com/RohitB2005/TrialAI-Game.git" target="_blank" class="project-button">View Code</a>
                             <!-- Link to your new demo video -->
-                            <a href="https://youtu.be/xF5pg3dE9Zw" target="_blank" class="project-button">Demo Video</a>
+                            <a href=" target="_blank" class="project-button">Demo Video</a>
                         </div>
                     </div>
                 </div>
