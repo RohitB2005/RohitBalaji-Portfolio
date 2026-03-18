@@ -941,12 +941,12 @@ body.light-mode #stars,
 body.light-mode #stars2,
 body.light-mode #stars3 {
     animation-name: animSnow;
-    animation-duration: 20s;
+    animation-duration: 50s;
     filter: drop-shadow(1px 1px 1px rgba(0, 0, 0, 0.3));
 }
 
-body.light-mode #stars2 { animation-duration: 15s; }
-body.light-mode #stars3 { animation-duration: 10s; }
+body.light-mode #stars2 { animation-duration: 35s; }
+body.light-mode #stars3 { animation-duration: 25s; }
 
 /* Navbar Styling */
 .nav {
