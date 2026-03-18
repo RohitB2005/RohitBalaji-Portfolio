@@ -506,7 +506,6 @@ function onKeydown(e) {
 
 if (scene) {
     scene.tabIndex = 0;
-    scene.addEventListener('wheel', onSceneWheel, { passive: false });
     window.addEventListener('keydown', onKeydown);
 
     document.addEventListener('click', (e) => {
