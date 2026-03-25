@@ -39,7 +39,7 @@
 body.light-mode {
     --bg-gradient: radial-gradient(ellipse at center, #B0E0E6 0%, #4682B4 100%); 
     --text-primary: #1c2a3a;
-    --text-secondary: #2c3e50;
+    --text-secondary: #000000;
     --card-bg: rgba(255, 255, 255, 0.75); 
     --card-border: #FFF;
     --accent-color: #007bff; 
@@ -56,6 +56,7 @@ body {
     font-family: "Quicksand", sans-serif;
     font-size: 62.5%;
     font-size: 10px;
+    overscroll-behavior: none;
 }
 
 body {
@@ -86,6 +87,11 @@ main section {
     margin-bottom: 5rem;
 }
 
+main section:last-child {
+    margin-bottom: 0;
+    padding-bottom: 5rem;
+}
+
 main h2 {
     font-size: 4rem;
     text-align: center;
@@ -98,14 +104,6 @@ main p {
     color: var(--text-secondary);
 }
 
-footer {
-    position: relative;
-    z-index: 1;
-    color: var(--text-primary);
-    text-align: center;
-    padding: 2rem;
-}
-
 .profile-photo {
     display: block;
     width: 200px;
@@ -114,6 +112,29 @@ footer {
     border: 4px solid var(--text-primary);
     margin: 3rem auto 4rem;
     object-fit: cover;
+}
+
+.cv-download-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 1rem;
+    background-color: var(--accent-color);
+    color: #000;
+    padding: 1.2rem 3rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1.8rem;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.cv-download-btn:hover {
+    opacity: 0.85;
+    transform: translateY(-2px);
+}
+
+body.light-mode .cv-download-btn {
+    color: #fff;
 }
 
 .tech-stack-container {
@@ -688,7 +709,6 @@ body.light-mode .credential-link {
     border-radius: 12px;
     border: 1px solid var(--card-border);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
-    overflow: hidden;
     flex-basis: 400px;
     flex: 0 0 400px;
     max-width: 90%;
@@ -705,6 +725,9 @@ body.light-mode .credential-link {
     width: 100%;
     height: 220px;
     object-fit: cover;
+    border-radius: 12px 12px 0 0;
+    overflow: hidden;
+    display: block;
 }
 
 .project-info {
@@ -841,6 +864,15 @@ body.light-mode .project-button {
     transition: transform 0.5s ease, color 0.3s ease;
     padding: 10px;
     border-radius: 50%;
+    display: inline-block;
+    position: relative;
+}
+
+#theme-toggle::after {
+    bottom: auto;
+    top: calc(100% + 6px);
+    left: 50%;
+    transform: translateX(-50%);
 }
 
 #theme-toggle:hover {
@@ -854,6 +886,68 @@ body.light-mode #theme-toggle:hover {
 
 .rotate-icon {
     transform: rotate(360deg);
+}
+
+.about-greeting {
+    font-size: 1.6rem;
+    color: var(--accent-color);
+    font-weight: 500;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    text-align: center;
+    margin: 0 0 0.8rem;
+}
+
+.about-hero-name {
+    font-size: 5rem;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 500;
+    color: var(--text-primary);
+    text-align: center;
+    margin: 0 0 1rem;
+    line-height: 1.1;
+    letter-spacing: -1px;
+}
+
+.about-roles {
+    font-size: 1.7rem;
+    color: var(--accent-color);
+    font-weight: 600;
+    text-align: center;
+    letter-spacing: 1px;
+    margin: 0 0 0;
+}
+
+@media screen and (max-width: 768px) {
+    .about-hero-name {
+        font-size: 4rem;
+    }
+}
+
+.about-anim {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.about-anim-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.about-cursor {
+    display: inline-block;
+    width: 3px;
+    height: 0.8em;
+    background-color: var(--accent-color);
+    margin-left: 3px;
+    vertical-align: middle;
+    animation: cursorBlink 0.8s step-end infinite;
+}
+
+@keyframes cursorBlink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
 }
 
 /* --- STAR & SNOW ANIMATIONS --- */
@@ -942,7 +1036,6 @@ body.light-mode #stars2,
 body.light-mode #stars3 {
     animation-name: animSnow;
     animation-duration: 50s;
-    filter: drop-shadow(1px 1px 1px rgba(0, 0, 0, 0.3));
 }
 
 body.light-mode #stars2 { animation-duration: 35s; }
@@ -1129,6 +1222,41 @@ body.light-mode #stars3 { animation-duration: 25s; }
 .navTrigger.active i:nth-child(3) {
     -webkit-animation: inBtm 0.8s forwards;
     animation: inBtm 0.8s forwards;
+}
+
+/* ========================================
+   TOOLTIPS
+   ======================================== */
+
+[data-tooltip] {
+    position: relative;
+}
+
+[data-tooltip]::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(0, 0, 0, 0.85);
+    color: #fff;
+    font-size: 1.2rem;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+    z-index: 9999;
+}
+
+[data-tooltip]:hover::after {
+    opacity: 1;
+}
+
+body.light-mode [data-tooltip]::after {
+    background-color: rgba(20, 30, 40, 0.92);
 }
 
 @keyframes inM { 50% { transform: rotate(0deg); } 100% { transform: rotate(45deg); } }

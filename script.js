@@ -50,7 +50,6 @@ $(document).ready(function() {
    CERTIFICATIONS COMPONENT JAVASCRIPT
    ======================================== */
 
-// Certificate data
 const certificates = [
     {
         id: 1,
@@ -133,7 +132,6 @@ const certificates = [
 let currentView = '3d';
 let selectedIndex = -1;
 const scene = document.getElementById('scene-container');
-const counterLabel = document.getElementById('counter-label');
 const btn3d = document.getElementById('btn-3d');
 const btnGrid = document.getElementById('btn-grid');
 
@@ -170,13 +168,11 @@ function renderCards() {
             <div style="font-size: 1.6rem; font-weight: bold; letter-spacing: -0.5px; word-break: break-word; padding-right: 0.5rem; line-height: 1.3;">${cert.title}</div>
             <div style="margin-top: 0.5rem; font-size: 1.2rem; opacity: 0.8; font-family: monospace;">Credential ID: ${cert.credentialId}</div>
         </div>
-
         <div style="grid-column: 2; grid-row: 1; display:flex; justify-content:center; align-items:flex-start;">
             <div style="width: 48px; height: 48px; border-radius: 8px; border: 1px solid #e5e7eb; background: white; display: flex; align-items: center; justify-content: center; padding: 4px;">
                 ${cert.logoSrc ? `<img src="${cert.logoSrc}" alt="${cert.provider} logo" style="width: 100%; height: 100%; object-fit: contain;" draggable="false" />` : cert.logoText}
             </div>
         </div>
-
         <div style="grid-column: 1 / span 2; grid-row: 2; margin-top: 4px;">
             ${cert.courses && cert.courses.length ? `
                 <div style="font-size: 1.2rem;">
@@ -188,7 +184,6 @@ function renderCards() {
             ` : ''}
         </div>
     </div>
-
     <div class="absolute left-0 right-0 bottom-3 flex justify-center gap-3">
         ${cert.credentialLink ? `<a href="${cert.credentialLink}" target="_blank" class="credential-link text-xs font-semibold underline bg-white/10 px-2 py-0.5 rounded hover:bg-white/20">Show Credential</a>` : ''}
         <a href="#" class="show-cert-btn text-xs font-semibold underline bg-white/10 px-2 py-0.5 rounded hover:bg-white/20">Show Certificates</a>
@@ -218,7 +213,17 @@ function renderCards() {
 }
 
 // Modal implementation
-(function createCertificatesModal(){
+(function createCertificatesModal() {
+    // Single handler reference at IIFE scope — only one can ever be registered at a time
+    let modalKeyHandler = null;
+
+    function clearKeyHandler() {
+        if (modalKeyHandler) {
+            document.removeEventListener('keydown', modalKeyHandler);
+            modalKeyHandler = null;
+        }
+    }
+
     const modalOverlay = document.createElement('div');
     modalOverlay.className = 'cert-modal-overlay hidden';
 
@@ -239,10 +244,14 @@ function renderCards() {
     document.body.appendChild(modalOverlay);
 
     modalOverlay.querySelector('.cert-modal-close').addEventListener('click', () => {
+        clearKeyHandler();
         modalOverlay.classList.add('hidden');
     });
 
     window.openCertificatesModal = function(imageList, title) {
+        // Clear any handler left over from a previously opened modal
+        clearKeyHandler();
+
         const body = modal.querySelector('.cert-modal-body');
         body.innerHTML = '';
 
@@ -255,6 +264,7 @@ function renderCards() {
         let currentIndex = -1;
 
         function renderGrid() {
+            clearKeyHandler();
             body.innerHTML = '';
             body.appendChild(heading);
 
@@ -313,21 +323,33 @@ function renderCards() {
             backBtn.className = 'cert-modal-back';
             backBtn.textContent = 'Back';
             backBtn.addEventListener('click', () => renderGrid());
-
-            const spacer = document.createElement('div');
-            spacer.style.flex = '1';
-
             controls.appendChild(backBtn);
-            controls.appendChild(spacer);
-
             body.appendChild(controls);
 
+            const row = document.createElement('div');
+            row.style.display = 'flex';
+            row.style.alignItems = 'center';
+            row.style.justifyContent = 'center';
+            row.style.gap = '1rem';
+            row.style.width = '100%';
+
+            const sidePrev = document.createElement('button');
+            sidePrev.className = 'cert-modal-side';
+            sidePrev.textContent = '❮';
+            sidePrev.setAttribute('aria-label', 'Previous');
+            sidePrev.style.flexShrink = '0';
+            sidePrev.style.position = 'static';
+            sidePrev.style.transform = 'none';
+            sidePrev.style.visibility = (currentIndex > 0) ? 'visible' : 'hidden';
+            sidePrev.addEventListener('click', () => {
+                if (currentIndex > 0) showLargeImage(currentIndex - 1);
+            });
+
             const imgContainer = document.createElement('div');
-            imgContainer.style.width = '100%';
+            imgContainer.style.flex = '1';
             imgContainer.style.display = 'flex';
-            imgContainer.style.alignItems = 'center';
             imgContainer.style.justifyContent = 'center';
-            imgContainer.style.position = 'relative';
+            imgContainer.style.overflow = 'hidden';
 
             const img = document.createElement('img');
             img.src = imageList[currentIndex];
@@ -336,29 +358,38 @@ function renderCards() {
             img.style.width = 'auto';
             img.style.maxWidth = '100%';
             img.style.objectFit = 'contain';
+            img.style.borderRadius = '8px';
             imgContainer.appendChild(img);
 
-            const sidePrev = document.createElement('button');
-            sidePrev.className = 'cert-modal-side cert-modal-side-prev';
-            sidePrev.textContent = '❮';
-            sidePrev.setAttribute('aria-label', 'Previous');
-            sidePrev.style.left = '6px';
-            sidePrev.style.position = 'absolute';
-            sidePrev.style.display = (currentIndex > 0) ? 'flex' : 'none';
-            sidePrev.addEventListener('click', () => { if (currentIndex > 0) showLargeImage(currentIndex - 1); });
-            imgContainer.appendChild(sidePrev);
-
             const sideNext = document.createElement('button');
-            sideNext.className = 'cert-modal-side cert-modal-side-next';
+            sideNext.className = 'cert-modal-side';
             sideNext.textContent = '❯';
             sideNext.setAttribute('aria-label', 'Next');
-            sideNext.style.right = '6px';
-            sideNext.style.position = 'absolute';
-            sideNext.style.display = (currentIndex < imageList.length - 1) ? 'flex' : 'none';
-            sideNext.addEventListener('click', () => { if (currentIndex < imageList.length - 1) showLargeImage(currentIndex + 1); });
-            imgContainer.appendChild(sideNext);
+            sideNext.style.flexShrink = '0';
+            sideNext.style.position = 'static';
+            sideNext.style.transform = 'none';
+            sideNext.style.visibility = (currentIndex < imageList.length - 1) ? 'visible' : 'hidden';
+            sideNext.addEventListener('click', () => {
+                if (currentIndex < imageList.length - 1) showLargeImage(currentIndex + 1);
+            });
 
-            body.appendChild(imgContainer);
+            row.appendChild(sidePrev);
+            row.appendChild(imgContainer);
+            row.appendChild(sideNext);
+            body.appendChild(row);
+
+            // Register a fresh single handler — clear old one first
+            clearKeyHandler();
+            modalKeyHandler = function(e) {
+                if (e.key === 'ArrowLeft' && currentIndex > 0) {
+                    showLargeImage(currentIndex - 1);
+                } else if (e.key === 'ArrowRight' && currentIndex < imageList.length - 1) {
+                    showLargeImage(currentIndex + 1);
+                } else if (e.key === 'Escape') {
+                    renderGrid();
+                }
+            };
+            document.addEventListener('keydown', modalKeyHandler);
         }
 
         renderGrid();
@@ -372,15 +403,12 @@ function handleMouseEnter(hoveredIndex) {
     const allCards = document.querySelectorAll('.card-wrapper');
     allCards.forEach((card, index) => {
         card.classList.remove('is-hovered', 'shift-left', 'shift-right');
-        
         if (index === hoveredIndex) {
             card.classList.add('is-hovered');
+        } else if (index < hoveredIndex) {
+            card.classList.add('shift-left');
         } else {
-            if (index < hoveredIndex) {
-                card.classList.add('shift-left');
-            } else {
-                card.classList.add('shift-right');
-            }
+            card.classList.add('shift-right');
         }
     });
 }
@@ -413,12 +441,7 @@ window.setView = function(mode) {
 
 function handleCardClick(index) {
     if (currentView !== '3d') return;
-
-    if (selectedIndex === index) {
-        selectedIndex = -1;
-    } else {
-        selectedIndex = index;
-    }
+    selectedIndex = (selectedIndex === index) ? -1 : index;
     updateSelectedState();
 }
 
@@ -475,7 +498,7 @@ function navigate(direction) {
     selectedIndex = idx;
     updateSelectedState();
     const card = document.querySelector(`.card-wrapper[data-index="${selectedIndex}"]`);
-    if (card) card.scrollIntoView({behavior: 'smooth', block: 'nearest', inline: 'center'});
+    if (card) card.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
 }
 
 function onSceneWheel(e) {
@@ -483,39 +506,15 @@ function onSceneWheel(e) {
     const now = Date.now();
     if (now - _lastWheelAt < _wheelDebounce) return;
     _lastWheelAt = now;
-
-    if (e.deltaY > 5) {
-        e.preventDefault();
-        navigate(1);
-    } else if (e.deltaY < -5) {
-        e.preventDefault();
-        navigate(-1);
-    }
-}
-
-function onKeydown(e) {
-    if (currentView !== '3d') return;
-    if (e.key === 'ArrowLeft') {
-        e.preventDefault();
-        navigate(-1);
-    } else if (e.key === 'ArrowRight') {
-        e.preventDefault();
-        navigate(1);
-    }
+    if (e.deltaY > 5) { e.preventDefault(); navigate(1); }
+    else if (e.deltaY < -5) { e.preventDefault(); navigate(-1); }
 }
 
 if (scene) {
-    scene.tabIndex = 0;
-    window.addEventListener('keydown', onKeydown);
-
     document.addEventListener('click', (e) => {
         if (currentView !== '3d') return;
         if (selectedIndex === -1) return;
-
-        // Only allow deselect via a normal left-click (button === 0).
-        // Ignore right-clicks, middle-clicks, and other mouse buttons.
         if ('button' in e && e.button !== 0) return;
-
         if (!e.target.closest('.card-wrapper')) {
             selectedIndex = -1;
             updateSelectedState();
@@ -524,11 +523,9 @@ if (scene) {
 }
 
 function updateUI() {
-
     if (btn3d && btnGrid) {
         btn3d.classList.remove('active');
         btnGrid.classList.remove('active');
-
         if (currentView === '3d') {
             btn3d.classList.add('active');
         } else {
@@ -545,31 +542,78 @@ function animateLayoutTransition() {
 
     requestAnimationFrame(() => {
         const lastRects = cards.map(card => card.getBoundingClientRect());
-
         cards.forEach((card, i) => {
             const dx = firstRects[i].left - lastRects[i].left;
             const dy = firstRects[i].top - lastRects[i].top;
-
             card.style.transition = 'none';
             card.style.transform = `translate(${dx}px, ${dy}px)`;
-
             card.offsetHeight;
-
             card.style.transition = 'transform 1.4s var(--ease-smooth)';
             card.style.transform = '';
         });
     });
 }
 
-// Initialize the certifications component
-if (scene) {
-    // Ensure the page has the correct initial view class so
-    // CSS for `.mode-3d` applies (gives the scene height, layout, etc.)
-    if (!document.body.classList.contains('mode-3d') && !document.body.classList.contains('mode-grid')) {
-        document.body.classList.add('mode-3d');
-        // keep the JS view state in sync
-        currentView = '3d';
+function initAboutAnimation() {
+    const greeting  = document.querySelector('.about-greeting');
+    const nameEl    = document.querySelector('.about-hero-name');
+    const roles     = document.querySelector('.about-roles');
+    const photo     = document.querySelector('.profile-photo');
+    const bios      = document.querySelectorAll('#about p:not(.about-greeting):not(.about-roles)');
+    const cvBtn     = document.querySelector('.cv-download-btn');
+
+    // Apply initial hidden state to all fade elements
+    [greeting, roles, photo, ...bios, cvBtn].forEach(el => {
+        if (el) el.classList.add('about-anim');
+    });
+
+    // Replace name content with typewriter structure
+    if (nameEl) {
+        nameEl.classList.add('about-anim');
+        nameEl.innerHTML = '<span id="about-typed"></span><span class="about-cursor"></span>';
     }
 
+    const typedEl  = document.getElementById('about-typed');
+    const cursorEl = document.querySelector('.about-cursor');
+    const fullName = 'Rohit Balaji';
+
+    // Greeting fades in first
+    setTimeout(() => greeting && greeting.classList.add('about-anim-visible'), 150);
+
+    // Name typewriter starts shortly after
+    setTimeout(() => {
+        if (!nameEl || !typedEl) return;
+        nameEl.classList.add('about-anim-visible');
+        let i = 0;
+        const interval = setInterval(() => {
+            typedEl.textContent += fullName[i];
+            i++;
+            if (i >= fullName.length) {
+                clearInterval(interval);
+                setTimeout(() => { if (cursorEl) cursorEl.style.display = 'none'; }, 800);
+            }
+        }, 60);
+    }, 400);
+
+    // Everything else staggers in after the name finishes
+    [
+        { el: roles,    delay: 950  },
+        { el: photo,    delay: 1150 },
+        { el: bios[0],  delay: 1400 },
+        { el: bios[1],  delay: 1650 },
+        { el: cvBtn,    delay: 1900 },
+    ].forEach(({ el, delay }) => {
+        if (el) setTimeout(() => el.classList.add('about-anim-visible'), delay);
+    });
+}
+
+initAboutAnimation();
+
+// Initialize
+if (scene) {
+    if (!document.body.classList.contains('mode-3d') && !document.body.classList.contains('mode-grid')) {
+        document.body.classList.add('mode-3d');
+        currentView = '3d';
+    }
     renderCards();
 }
