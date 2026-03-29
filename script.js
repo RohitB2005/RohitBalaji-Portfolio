@@ -3,7 +3,6 @@ $(document).ready(function() {
     // --- Navbar Hamburger Logic ---
     $(".navTrigger").click(function () {
         $(this).toggleClass("active");
-        console.log("Clicked menu");
         $("#mainListDiv").toggleClass("show_list");
         $("#mainListDiv").fadeIn();
     });
