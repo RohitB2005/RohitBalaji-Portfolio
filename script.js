@@ -344,6 +344,8 @@ function renderCards() {
                 const img = document.createElement('img');
                 img.src = src;
                 img.alt = 'certificate image';
+                img.loading = 'lazy';
+                img.decoding = 'async';
                 img.style.cursor = 'pointer';
                 img.style.width = '100%';
                 img.style.height = '160px';
