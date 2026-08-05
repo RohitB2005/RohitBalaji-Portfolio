@@ -349,6 +349,11 @@ function renderCards() {
                 grid.style.gridTemplateColumns = 'repeat(3, 1fr)';
             }
 
+            // Grid cells render at ~160px tall, so load the 400px thumbnail
+            // rather than the full-size scan. Full size is fetched only when a
+            // cell is opened.
+            const thumbFor = src => src.replace(/([^/]+)$/, 'thumbs/$1');
+
             imageList.forEach((src, idx) => {
                 const imgWrap = document.createElement('div');
                 imgWrap.style.border = '1px solid var(--card-border)';
@@ -358,7 +363,10 @@ function renderCards() {
                 imgWrap.style.padding = '4px';
 
                 const img = document.createElement('img');
-                img.src = src;
+                img.src = thumbFor(src);
+                // If a thumbnail is missing for any reason, fall back to the
+                // full-size file rather than showing a broken image.
+                img.addEventListener('error', () => { if (img.src !== src) img.src = src; }, { once: true });
                 img.alt = 'certificate image';
                 img.loading = 'lazy';
                 img.decoding = 'async';
