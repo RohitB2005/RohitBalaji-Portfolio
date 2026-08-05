@@ -1330,6 +1330,69 @@ body.light-mode #stars3 { animation-duration: 25s; }
 }
 
 /* ========================================
+   FOCUS VISIBILITY
+   ======================================== */
+
+/* :focus-visible only, so a mouse click never shows a ring. The default UA
+   outline is deliberately left in place as the fallback — nothing here sets
+   `outline: none`. */
+:focus-visible {
+    outline: 2px solid var(--accent-color);
+    outline-offset: 3px;
+    border-radius: 4px;
+}
+
+.card-wrapper:focus-visible {
+    outline-offset: 6px;
+}
+
+/* ========================================
+   REDUCED MOTION
+   ======================================== */
+
+/* Honours the OS-level "reduce motion" setting. The star drift, the hero
+   typewriter and the 1.4s 3D card transitions can all trigger discomfort for
+   users with vestibular disorders. */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+
+    html {
+        scroll-behavior: auto;
+    }
+
+    /* Park the starfields instead of scrolling them forever. */
+    #stars,
+    #stars2,
+    #stars3 {
+        animation: none !important;
+    }
+
+    /* The hero content is revealed immediately by script.js in this mode;
+       make sure it is visible even if the script never runs. */
+    .about-anim {
+        opacity: 1 !important;
+        transform: none !important;
+    }
+
+    .about-cursor {
+        display: none !important;
+    }
+
+    /* Hover lifts are fine, but the long 3D re-layouts are not. */
+    .card-wrapper,
+    .card-inner {
+        transition: none !important;
+    }
+}
+
+/* ========================================
    TOOLTIPS
    ======================================== */
 

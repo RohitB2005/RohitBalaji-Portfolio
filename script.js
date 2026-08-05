@@ -193,6 +193,22 @@ function renderCards() {
         wrapper.addEventListener('mouseleave', () => handleMouseLeave());
         wrapper.addEventListener('click', (e) => { e.stopPropagation(); handleCardClick(index); });
 
+        // Keyboard-operable: a bare <div> with a click handler is invisible to
+        // both the tab order and screen readers.
+        wrapper.tabIndex = 0;
+        wrapper.setAttribute('role', 'button');
+        wrapper.setAttribute('aria-pressed', 'false');
+        wrapper.setAttribute('aria-label', `${cert.provider} — ${cert.title}`);
+        wrapper.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') {
+                e.preventDefault();
+                handleCardClick(index);
+            }
+        });
+        // Mirror hover peek for keyboard users.
+        wrapper.addEventListener('focus', () => handleMouseEnter(index));
+        wrapper.addEventListener('blur', () => handleMouseLeave());
+
         wrapper.dataset.index = index;
 
         const inner = document.createElement('div');
@@ -510,6 +526,7 @@ function updateSelectedState() {
     }
 
     cards.forEach((card, idx) => {
+        card.setAttribute('aria-pressed', String(idx === selectedIndex));
         if (idx === selectedIndex) {
             card.classList.add('is-selected');
             card.classList.remove('is-hovered', 'shift-left', 'shift-right');
@@ -625,6 +642,16 @@ function initAboutAnimation() {
     const cursorEl = document.querySelector('.about-cursor');
     const fullName = 'Rohit Balaji';
 
+    // Reduced motion: show everything at once, no typing, no staggered fades.
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        if (typedEl) typedEl.textContent = fullName;
+        if (cursorEl) cursorEl.style.display = 'none';
+        [greeting, nameEl, roles, photo, ...bios, cvBtn].forEach(el => {
+            if (el) el.classList.add('about-anim-visible');
+        });
+        return;
+    }
+
     // Greeting fades in first
     setTimeout(() => greeting && greeting.classList.add('about-anim-visible'), 150);
 
@@ -663,6 +690,13 @@ const certSmallScreen = window.matchMedia('(max-width: 700px)');
 
 function enforceCertViewForViewport() {
     if (certSmallScreen.matches && currentView !== 'grid') {
+        // setView() refuses to leave 3D while a card is selected. Clear the
+        // selection first, otherwise narrowing the window with a card open
+        // would strand the fixed-width stack and re-introduce the overflow.
+        if (selectedIndex !== -1) {
+            selectedIndex = -1;
+            updateSelectedState();
+        }
         setView('grid');
     }
 }
@@ -676,4 +710,8 @@ if (scene) {
     renderCards();
     enforceCertViewForViewport();
     certSmallScreen.addEventListener('change', enforceCertViewForViewport);
+
+    // Replaces inline onclick="setView(...)" attributes.
+    if (btn3d) btn3d.addEventListener('click', () => setView('3d'));
+    if (btnGrid) btnGrid.addEventListener('click', () => setView('grid'));
 }
