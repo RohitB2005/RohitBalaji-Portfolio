@@ -183,10 +183,20 @@ body.light-mode .cv-download-btn {
 }
 
 .skills-container {
-    display: flex;
-    justify-content: center;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
     gap: 1.5rem;
     margin-top: 3rem;
+}
+
+/* 4-across matches the previous flex layout exactly at desktop.
+   Below that the cards reflow instead of overflowing the viewport. */
+@media screen and (max-width: 940px) {
+    .skills-container { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media screen and (max-width: 520px) {
+    .skills-container { grid-template-columns: 1fr; }
 }
 
 .skill-card {
@@ -196,7 +206,6 @@ body.light-mode .cv-download-btn {
     text-align: center;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     padding: 2rem;
-    flex-basis: 300px;
 }
 
 .skill-card:hover {
@@ -320,16 +329,29 @@ body.light-mode .cert-view-btn.active {
     /* Ensure each grid cell is at least the card width so content doesn't compress */
     grid-template-columns: repeat(auto-fit, minmax(var(--card-width), 1fr));
     gap: 1.5rem;
-    max-width: 1250px;
+    /* border-box + 1290px keeps the inner 1250px content width identical to
+       before, while stopping `width:100%` + 2rem padding from overflowing the
+       viewport by 40px on small screens. */
+    box-sizing: border-box;
+    max-width: 1290px;
     margin: 0 auto;
     width: 100%;
     padding: 0 2rem;
 }
 
-@media (min-width: 768px) {
+/* 5-across only where a 5th column is actually wide enough to hold its content.
+   This used to start at 768px, which squeezed each card to ~148px and clipped
+   the course text and buttons. Below 1200px the auto-fit rule above applies. */
+@media (min-width: 1200px) {
     .mode-grid #scene-container {
         grid-template-columns: repeat(5, minmax(0, 1fr));
     }
+}
+
+/* The 3D stack needs a fixed ~500px of width and cannot shrink, so below
+   700px the grid is the only view offered (enforced in script.js too). */
+@media screen and (max-width: 700px) {
+    .cert-view-controls { display: none; }
 }
 
 /* Card Wrapper */
@@ -351,9 +373,10 @@ body.light-mode .cert-view-btn.active {
 }
 
 .mode-grid .card-wrapper {
-    /* Keep a consistent card height in grid mode to match original component */
+    /* Keep a consistent card height in grid mode to match original component.
+       min-height (not height) so a narrow column grows instead of clipping. */
     width: auto;
-    height: var(--card-height);
+    min-height: var(--card-height);
     margin-left: 0 !important;
 }
 
@@ -698,10 +721,15 @@ body.light-mode .credential-link {
 
 .projects-container {
     display: flex;
+    flex-wrap: wrap;
     justify-content: center;
     gap: 2.5rem;
     margin-top: 3rem;
-    max-width: 1000px;
+    /* Break out of main's 900px content box so the row keeps its original
+       1256px span on desktop, but never grow past the viewport. Below
+       ~1296px it shrinks with the screen instead of overflowing. */
+    width: min(1256px, calc(100vw - 4rem));
+    margin-inline: calc((100% - min(1256px, 100vw - 4rem)) / 2);
 }
 
 .project-card {
@@ -709,9 +737,10 @@ body.light-mode .credential-link {
     border-radius: 12px;
     border: 1px solid var(--card-border);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
-    flex-basis: 400px;
-    flex: 0 0 400px;
-    max-width: 90%;
+    /* Was `flex: 0 0 400px` — unshrinkable, which forced the mobile zoom-out.
+       Now grows to the original 400px cap but is free to shrink and wrap. */
+    flex: 1 1 280px;
+    max-width: 400px;
     display: flex;
     flex-direction: column;
 }
@@ -773,6 +802,7 @@ body.light-mode .project-tech-list span {
 
 .project-links {
     display: flex;
+    flex-wrap: wrap;
     gap: 1rem;
 }
 
@@ -866,7 +896,20 @@ body.light-mode .project-button {
     border-radius: 50%;
     display: inline-block;
     position: relative;
+    /* Now a <button> for keyboard access — strip the UA chrome so it stays
+       visually identical to the old <i>. font-family is deliberately NOT set
+       here, so the .fas Font Awesome family still applies. */
+    background: none;
+    border: none;
+    line-height: 1;
+    -webkit-appearance: none;
+    appearance: none;
 }
+
+/* Icon is driven by the theme class rather than by swapping classes in JS,
+   so it cannot flash the wrong glyph before scripts run. */
+#theme-toggle::before { content: "\f186"; }          /* fa-moon */
+body.light-mode #theme-toggle::before { content: "\f185"; }  /* fa-sun */
 
 #theme-toggle::after {
     bottom: auto;
@@ -1125,44 +1168,100 @@ body.light-mode #stars3 { animation-duration: 25s; }
 }
 
 @media screen and (max-width:768px) {
-    .navTrigger {
+    /* Honest flex bar: logo left, theme toggle + hamburger right. The old
+       float + `position:absolute; right:30px` combination pushed the trigger
+       off-screen once the page was zoomed out. */
+    .nav .container {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 0 2rem;
+        height: 65px;
+        box-sizing: border-box;
+    }
+
+    /* `.nav` prefix raises specificity above the base `.navTrigger` block,
+       which appears later in this file and would otherwise win. */
+    .nav .navTrigger {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        position: static;
+        flex: 0 0 auto;
+        margin: 0;
+        right: auto;
+        top: auto;
+        bottom: auto;
+    }
+
+    .nav div.logo {
+        float: none;
+        padding-left: 0;
+        margin: 0;
+    }
+
+    .theme-switch-wrapper {
+        margin-left: auto;
+        padding-right: 0;
+    }
+
+    /* Drop-down panel, anchored to the bottom of the bar so it tracks the
+       nav's height whether or not `.affix` has collapsed the padding. */
+    .nav div.main_list {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        width: 100%;
+        height: auto;
+        max-height: calc(100vh - 100%);
+        overflow-y: auto;
+        float: none;
+        display: none;
+        background-color: var(--nav-bg-scrolled);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+    }
+
+    .nav div.main_list.show_list {
         display: block;
     }
-    .nav div.logo {
-        margin-left: 15px;
-    }
-    .nav div.main_list {
-        width: 100%;
-        height: 0;
-        overflow: hidden;
-    }
-    .nav div.show_list {
-        height: auto;
-        display: none;
-    }
+
     .nav div.main_list ul {
         flex-direction: column;
         width: 100%;
-        height: 100vh;
-        right: 0;
-        left: 0;
-        bottom: 0;
-        background-color: #111;
-        background-position: center top;
+        height: auto;
+        padding: 1rem 0;
+        background: none;
     }
+
+    /* `padding-right: 3rem` inherited from the desktop rule overflowed the
+       viewport by 30px, which is what triggered the shrink-to-fit zoom. */
     .nav div.main_list ul li {
         width: 100%;
-        text-align: right;
-    }
-    .nav div.main_list ul li a {
+        height: auto;
+        padding: 0;
         text-align: center;
-        width: 100%;
-        font-size: 3rem;
-        padding: 20px;
-        color: #fff;
     }
-    .nav div.media_button {
+
+    /* The <a> was `display: inline`, so `width` and `text-align` did nothing
+       and the links rendered off the right edge. */
+    .nav div.main_list ul li a {
         display: block;
+        width: auto;
+        text-align: center;
+        font-size: 2.4rem;
+        line-height: 1.4;
+        padding: 1.6rem 2rem;
+        color: var(--nav-text);
+    }
+
+    .nav div.main_list ul li a:hover {
+        color: var(--accent-color);
+    }
+
+    /* Prevent the page behind the open menu from scrolling. */
+    body.nav-open {
+        overflow: hidden;
     }
 }
 
@@ -1176,6 +1275,12 @@ body.light-mode #stars3 { animation-duration: 25s; }
     right: 30px;
     top: 0;
     bottom: 0;
+    /* Now a <button> for keyboard access — strip the UA chrome. */
+    background: none;
+    border: none;
+    padding: 0;
+    -webkit-appearance: none;
+    appearance: none;
 }
 
 .navTrigger i {

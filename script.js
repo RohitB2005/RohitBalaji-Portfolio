@@ -1,10 +1,55 @@
 $(document).ready(function() {
 
     // --- Navbar Hamburger Logic ---
-    $(".navTrigger").click(function () {
-        $(this).toggleClass("active");
-        $("#mainListDiv").toggleClass("show_list");
-        $("#mainListDiv").fadeIn();
+    // Single source of truth for open/closed. The previous version toggled a
+    // class *and* called .fadeIn(), which left an inline `display` that fought
+    // the stylesheet, and the menu never closed after tapping a link.
+    const navTrigger = document.querySelector('.navTrigger');
+    const mainList = document.getElementById('mainListDiv');
+
+    function setMenu(open) {
+        if (!navTrigger || !mainList) return;
+        navTrigger.classList.toggle('active', open);
+        mainList.classList.toggle('show_list', open);
+        document.body.classList.toggle('nav-open', open);
+        navTrigger.setAttribute('aria-expanded', String(open));
+        navTrigger.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+    }
+
+    function menuIsOpen() {
+        return !!mainList && mainList.classList.contains('show_list');
+    }
+
+    if (navTrigger) {
+        navTrigger.addEventListener('click', function (e) {
+            e.stopPropagation();
+            setMenu(!menuIsOpen());
+        });
+    }
+
+    // Close after choosing a destination.
+    document.querySelectorAll('.navlinks a').forEach(function (link) {
+        link.addEventListener('click', function () { setMenu(false); });
+    });
+
+    // Close on Escape.
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && menuIsOpen()) {
+            setMenu(false);
+            if (navTrigger) navTrigger.focus();
+        }
+    });
+
+    // Close when tapping outside the panel.
+    document.addEventListener('click', function (e) {
+        if (menuIsOpen() && !e.target.closest('#mainListDiv') && !e.target.closest('.navTrigger')) {
+            setMenu(false);
+        }
+    });
+
+    // Never leave the menu stuck open when resizing up to the desktop layout.
+    window.matchMedia('(min-width: 769px)').addEventListener('change', function (e) {
+        if (e.matches) setMenu(false);
     });
 
     // --- Sticky Navbar Logic ---
@@ -17,32 +62,34 @@ $(document).ready(function() {
     });
 
     // --- Theme Toggle Logic ---
-    const themeToggle = $('#theme-toggle');
-    const body = $('body');
+    // The initial theme is applied by the inline script at the top of <body>,
+    // before first paint, so there is no dark->light flash here. The icon glyph
+    // is driven by CSS off the body class, so no class swapping is needed.
+    const themeToggle = document.getElementById('theme-toggle');
 
-    // Load saved theme
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'light') {
-        body.addClass('light-mode');
-        themeToggle.removeClass('fa-moon').addClass('fa-sun');
+    function syncThemeButton() {
+        if (!themeToggle) return;
+        const isLight = document.body.classList.contains('light-mode');
+        themeToggle.setAttribute('aria-pressed', String(isLight));
+        themeToggle.setAttribute('aria-label',
+            isLight ? 'Switch to dark mode' : 'Switch to light mode');
     }
 
-    themeToggle.click(function() {
-        body.toggleClass('light-mode');
-        $(this).addClass('rotate-icon');
-        
-        if (body.hasClass('light-mode')) {
-            $(this).removeClass('fa-moon').addClass('fa-sun');
-            localStorage.setItem('theme', 'light');
-        } else {
-            $(this).removeClass('fa-sun').addClass('fa-moon');
-            localStorage.setItem('theme', 'dark');
-        }
-        
-        setTimeout(() => {
-            $(this).removeClass('rotate-icon');
-        }, 500);
-    });
+    syncThemeButton();
+
+    if (themeToggle) {
+        themeToggle.addEventListener('click', function () {
+            const isLight = document.body.classList.toggle('light-mode');
+            document.documentElement.classList.toggle('light-mode', isLight);
+            localStorage.setItem('theme', isLight ? 'light' : 'dark');
+            syncThemeButton();
+
+            themeToggle.classList.add('rotate-icon');
+            setTimeout(function () {
+                themeToggle.classList.remove('rotate-icon');
+            }, 500);
+        });
+    }
 });
 
 /* ========================================
@@ -608,6 +655,16 @@ function initAboutAnimation() {
 
 initAboutAnimation();
 
+// The 3D stack is a fixed ~500px wide and cannot shrink, so on narrow screens
+// it forces the whole page to zoom out. Below 700px the grid view is enforced.
+const certSmallScreen = window.matchMedia('(max-width: 700px)');
+
+function enforceCertViewForViewport() {
+    if (certSmallScreen.matches && currentView !== 'grid') {
+        setView('grid');
+    }
+}
+
 // Initialize
 if (scene) {
     if (!document.body.classList.contains('mode-3d') && !document.body.classList.contains('mode-grid')) {
@@ -615,4 +672,6 @@ if (scene) {
         currentView = '3d';
     }
     renderCards();
+    enforceCertViewForViewport();
+    certSmallScreen.addEventListener('change', enforceCertViewForViewport);
 }

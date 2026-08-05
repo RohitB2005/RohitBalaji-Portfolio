@@ -12,11 +12,26 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
 </head>
 <body>
+    <script>
+        /* Resolve the theme before the first paint so a returning light-mode
+           visitor never sees the dark background flash. Also honours the OS
+           setting when no explicit choice has been saved. */
+        (function () {
+            try {
+                var saved = localStorage.getItem('theme');
+                var light = saved === 'light' ||
+                    (!saved && window.matchMedia('(prefers-color-scheme: light)').matches);
+                if (light) {
+                    document.body.classList.add('light-mode');
+                    document.documentElement.classList.add('light-mode');
+                }
+            } catch (e) { /* private mode / storage disabled — keep the default */ }
+        })();
+    </script>
     <div id="stars"></div>
     <div id="stars2"></div>
     <div id="stars3"></div>
-    <header>
-        <a id="top"></a>
+    <header id="top">
         <nav class="nav">
             <div class="container">
                 <div class="logo">
@@ -33,13 +48,16 @@
                 </div>
 
                 <div class="theme-switch-wrapper">
-                    <i id="theme-toggle" class="fas fa-moon" data-tooltip="Toggle light / dark mode"></i>
+                    <button id="theme-toggle" class="fas fa-moon" type="button"
+                            aria-label="Toggle light / dark mode" aria-pressed="false"
+                            data-tooltip="Toggle light / dark mode"></button>
                 </div>
-                <span class="navTrigger">
+                <button class="navTrigger" type="button" aria-label="Open menu"
+                        aria-expanded="false" aria-controls="mainListDiv">
                     <i></i>
                     <i></i>
                     <i></i>
-                </span>
+                </button>
             </div>
         </nav>
     </header>
