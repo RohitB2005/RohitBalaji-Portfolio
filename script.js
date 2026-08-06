@@ -701,7 +701,14 @@ const certSmallScreen = window.matchMedia('(max-width: 700px)');
 // choice to stay in grid.
 let certViewForcedByViewport = false;
 
+// Set once the user picks a view themselves. From that point the viewport never
+// overrides them — including rotating a phone back to portrait after opting
+// into the 3D stack.
+let certViewUserChoice = null;
+
 function enforceCertViewForViewport() {
+    if (certViewUserChoice) return;
+
     if (certSmallScreen.matches) {
         if (currentView !== 'grid') {
             // setView() refuses to leave 3D while a card is selected. Clear the
@@ -731,8 +738,16 @@ if (scene) {
     enforceCertViewForViewport();
     certSmallScreen.addEventListener('change', enforceCertViewForViewport);
 
-    // Replaces inline onclick="setView(...)" attributes. A manual choice clears
-    // the "forced" flag so resizing never overrides it.
-    if (btn3d) btn3d.addEventListener('click', () => { certViewForcedByViewport = false; setView('3d'); });
-    if (btnGrid) btnGrid.addEventListener('click', () => { certViewForcedByViewport = false; setView('grid'); });
+    // Replaces inline onclick="setView(...)" attributes. Recording the choice
+    // makes it stick for the session, so resizing never overrides it.
+    if (btn3d) btn3d.addEventListener('click', () => {
+        certViewUserChoice = '3d';
+        certViewForcedByViewport = false;
+        setView('3d');
+    });
+    if (btnGrid) btnGrid.addEventListener('click', () => {
+        certViewUserChoice = 'grid';
+        certViewForcedByViewport = false;
+        setView('grid');
+    });
 }
