@@ -696,16 +696,28 @@ initAboutAnimation();
 // it forces the whole page to zoom out. Below 700px the grid view is enforced.
 const certSmallScreen = window.matchMedia('(max-width: 700px)');
 
+// Tracks whether grid mode was chosen for the user rather than by the user, so
+// widening the window can hand back the 3D view without overriding a deliberate
+// choice to stay in grid.
+let certViewForcedByViewport = false;
+
 function enforceCertViewForViewport() {
-    if (certSmallScreen.matches && currentView !== 'grid') {
-        // setView() refuses to leave 3D while a card is selected. Clear the
-        // selection first, otherwise narrowing the window with a card open
-        // would strand the fixed-width stack and re-introduce the overflow.
-        if (selectedIndex !== -1) {
-            selectedIndex = -1;
-            updateSelectedState();
+    if (certSmallScreen.matches) {
+        if (currentView !== 'grid') {
+            // setView() refuses to leave 3D while a card is selected. Clear the
+            // selection first, otherwise narrowing the window with a card open
+            // would strand the fixed-width stack and re-introduce the overflow.
+            if (selectedIndex !== -1) {
+                selectedIndex = -1;
+                updateSelectedState();
+            }
+            setView('grid');
+            certViewForcedByViewport = true;
         }
-        setView('grid');
+    } else if (certViewForcedByViewport) {
+        // Back on a wide screen and the user never picked grid themselves.
+        certViewForcedByViewport = false;
+        setView('3d');
     }
 }
 
@@ -719,7 +731,8 @@ if (scene) {
     enforceCertViewForViewport();
     certSmallScreen.addEventListener('change', enforceCertViewForViewport);
 
-    // Replaces inline onclick="setView(...)" attributes.
-    if (btn3d) btn3d.addEventListener('click', () => setView('3d'));
-    if (btnGrid) btnGrid.addEventListener('click', () => setView('grid'));
+    // Replaces inline onclick="setView(...)" attributes. A manual choice clears
+    // the "forced" flag so resizing never overrides it.
+    if (btn3d) btn3d.addEventListener('click', () => { certViewForcedByViewport = false; setView('3d'); });
+    if (btnGrid) btnGrid.addEventListener('click', () => { certViewForcedByViewport = false; setView('grid'); });
 }
