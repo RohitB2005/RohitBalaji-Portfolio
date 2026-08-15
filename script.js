@@ -165,8 +165,8 @@ const certificates = [
         color: "#EA4335",
         provider: "DeepLearning.AI",
         title: "Neural Networks & Deep Learning",
-        credentialId: "ZHER1XBHIAJ3",
-        credentialLink: "https://www.coursera.org/account/accomplishments/verify/ZHER1XBHJAJ3?utm_source=ios&utm_medium=certificate&utm_content=cert_image&utm_campaign=sharing_cta&utm_product=course",
+        credentialId: "ZHER1XBHJAJ3",
+        credentialLink: "https://www.coursera.org/account/accomplishments/verify/ZHER1XBHJAJ3",
         logoSrc: "images/DeepLearning.png",
         mediaLinks: ["images/deep.jpg"],
         courses: [
