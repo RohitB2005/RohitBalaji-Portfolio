@@ -325,6 +325,14 @@ function renderCards() {
 
         let currentIndex = -1;
 
+        // Grid cells render at ~160px tall, so they load the 400px thumbnail
+        // rather than the full-size scan. Hoisted to this scope so the large
+        // view can reuse the already-cached thumbnail as an instant placeholder.
+        const thumbFor = src => src.replace(/([^/]+)$/, 'thumbs/$1');
+
+        // Warm a full-size file in the background without blocking anything.
+        const prefetch = src => { const p = new Image(); p.src = src; };
+
         function renderGrid() {
             clearKeyHandler();
             body.innerHTML = '';
@@ -349,11 +357,6 @@ function renderCards() {
                 grid.style.gridTemplateColumns = 'repeat(3, 1fr)';
             }
 
-            // Grid cells render at ~160px tall, so load the 400px thumbnail
-            // rather than the full-size scan. Full size is fetched only when a
-            // cell is opened.
-            const thumbFor = src => src.replace(/([^/]+)$/, 'thumbs/$1');
-
             imageList.forEach((src, idx) => {
                 const imgWrap = document.createElement('div');
                 imgWrap.style.border = '1px solid var(--card-border)';
@@ -368,8 +371,12 @@ function renderCards() {
                 // full-size file rather than showing a broken image.
                 img.addEventListener('error', () => { if (img.src !== src) img.src = src; }, { once: true });
                 img.alt = 'certificate image';
-                img.loading = 'lazy';
+                // Eager, not lazy: the whole thumbnail set is only ~20KB per
+                // image, and having every one cached is what lets the large
+                // view open instantly with a placeholder instead of a blank box.
+                img.loading = 'eager';
                 img.decoding = 'async';
+                img.fetchPriority = 'high';
                 img.style.cursor = 'pointer';
                 img.style.width = '100%';
                 img.style.height = '160px';
@@ -423,15 +430,40 @@ function renderCards() {
             imgContainer.style.justifyContent = 'center';
             imgContainer.style.overflow = 'hidden';
 
+            // The full-size scans are ~320KB each. Creating a bare <img> and
+            // pointing it straight at one left the modal blank for the whole
+            // round trip, on every click and every arrow press. Start from the
+            // thumbnail that is already in cache, then swap once the full-size
+            // file has decoded, so there is never an empty frame.
+            const fullSrc = imageList[currentIndex];
             const img = document.createElement('img');
-            img.src = imageList[currentIndex];
+            img.src = thumbFor(fullSrc);
             img.alt = 'certificate image large';
+            img.decoding = 'async';
             img.style.maxHeight = '70vh';
             img.style.width = 'auto';
             img.style.maxWidth = '100%';
             img.style.objectFit = 'contain';
             img.style.borderRadius = '8px';
+            img.style.filter = 'blur(8px)';
+            img.style.transition = 'filter 0.3s ease';
             imgContainer.appendChild(img);
+
+            const fullImg = new Image();
+            fullImg.onload = () => {
+                // Ignore a late arrival if the user has already navigated away.
+                if (currentIndex !== index) return;
+                img.src = fullSrc;
+                img.style.filter = '';
+            };
+            // If the full-size file fails, keep the thumbnail rather than a gap.
+            fullImg.onerror = () => { if (currentIndex === index) img.style.filter = ''; };
+            fullImg.src = fullSrc;
+
+            // Warm the neighbours so the arrows resolve instantly.
+            [currentIndex - 1, currentIndex + 1].forEach(i => {
+                if (i >= 0 && i < imageList.length) prefetch(imageList[i]);
+            });
 
             const sideNext = document.createElement('button');
             sideNext.className = 'cert-modal-side';
