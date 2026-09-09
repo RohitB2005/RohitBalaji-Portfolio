@@ -783,3 +783,68 @@ if (scene) {
         setView('grid');
     });
 }
+
+/* ========================================
+   LANGUAGES & FRAMEWORKS CAROUSEL
+   Progressive enhancement: the markup is a plain wrapped grid, which is what
+   renders with no JS, under prefers-reduced-motion, and on narrow screens.
+   This only promotes it to a 3D ring where that actually fits.
+   ======================================== */
+
+(function initTechCarousel() {
+    const wrap = document.querySelector('.tech-stack-container');
+    const ring = wrap && wrap.querySelector('.tech-ring');
+    if (!wrap || !ring) return;
+
+    const cards = [...ring.querySelectorAll('.tech-card')];
+    if (!cards.length) return;
+
+    // The ring needs real width; below this the flat grid is the better layout
+    // (and re-introducing a fixed-width 3D element here would undo the mobile
+    // overflow fix).
+    const wideEnough = window.matchMedia('(min-width: 780px)');
+    const calm       = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+    let spin = 0, drift = 0.02, dragging = false, lastX = 0, raf = null, hovered = false;
+
+    cards.forEach((card, i) => {
+        card.style.setProperty('--tc-angle', `${(360 / cards.length) * i}deg`);
+    });
+
+    function frame() {
+        if (!dragging && !hovered) spin += drift;
+        ring.style.setProperty('--tc-spin', spin.toFixed(3) + 'deg');
+        raf = requestAnimationFrame(frame);
+    }
+
+    function apply() {
+        const on = wideEnough.matches && !calm.matches;
+        wrap.classList.toggle('is-3d', on);
+        if (on && raf === null) {
+            raf = requestAnimationFrame(frame);
+        } else if (!on && raf !== null) {
+            cancelAnimationFrame(raf);
+            raf = null;
+            ring.style.removeProperty('--tc-spin');
+        }
+    }
+
+    wrap.addEventListener('pointerenter', () => { hovered = true; });
+    wrap.addEventListener('pointerleave', () => { hovered = false; });
+    wrap.addEventListener('pointerdown', (e) => {
+        if (!wrap.classList.contains('is-3d')) return;
+        dragging = true; lastX = e.clientX;
+        wrap.setPointerCapture(e.pointerId);
+    });
+    wrap.addEventListener('pointermove', (e) => {
+        if (!dragging) return;
+        spin += (e.clientX - lastX) * 0.35;
+        lastX = e.clientX;
+    });
+    ['pointerup', 'pointercancel'].forEach(ev =>
+        wrap.addEventListener(ev, () => { dragging = false; }));
+
+    wideEnough.addEventListener('change', apply);
+    calm.addEventListener('change', apply);
+    apply();
+})();
