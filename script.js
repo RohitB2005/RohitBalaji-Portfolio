@@ -821,7 +821,9 @@ if (scene) {
     // immediately. requestAnimationFrame is throttled in background tabs and
     // under low-power mode; without this the ring would not follow the pointer.
     function render() {
-        ring.style.setProperty('--tc-spin', spin.toFixed(3) + 'deg');
+        // Writing transform directly is cheaper than going through a custom
+        // property, which invalidates style across the ring's subtree.
+        ring.style.transform = 'rotateX(-5deg) rotateY(' + spin.toFixed(2) + 'deg)';
     }
 
     function frame() {
@@ -837,15 +839,37 @@ if (scene) {
         raf = requestAnimationFrame(frame);
     }
 
+    // Spinning a 15-card 3D ring costs paint and compositing on every frame.
+    // Doing that while the section is scrolled out of view is pure waste, and
+    // it was making the rest of the page feel heavier than it needed to.
+    let onScreen = true;
+    if ('IntersectionObserver' in window) {
+        new IntersectionObserver((entries) => {
+            onScreen = entries[0].isIntersecting;
+            apply();
+        }, { rootMargin: '120px' }).observe(wrap);
+    }
+
     function apply() {
-        const on = wideEnough.matches && !calm.matches;
-        wrap.classList.toggle('is-3d', on);
-        if (on && raf === null) {
+        const is3D    = wideEnough.matches && !calm.matches;
+        const running = is3D && onScreen;
+
+        wrap.classList.toggle('is-3d', is3D);
+
+        if (running && raf === null) {
             raf = requestAnimationFrame(frame);
-        } else if (!on && raf !== null) {
+        } else if (!running && raf !== null) {
             cancelAnimationFrame(raf);
             raf = null;
-            ring.style.removeProperty('--tc-spin');
+        }
+
+        // Only reset the ring when genuinely leaving 3D mode. Clearing it on
+        // every pause would snap the ring back to 0deg each time it scrolled
+        // out of view and back.
+        if (!is3D) {
+            ring.style.removeProperty('transform');
+            spin = 0;
+            momentum = 0;
         }
     }
 

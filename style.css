@@ -210,6 +210,7 @@ body.light-mode .cv-download-btn {
     perspective: 1500px;
     perspective-origin: 50% 46%;
 
+    contain: layout paint;
     cursor: grab;
     touch-action: pan-y;
     /* without these a drag selects the card labels or starts an image drag
@@ -234,7 +235,7 @@ body.light-mode .cv-download-btn {
     height: var(--tc-card-h);
     margin: calc(var(--tc-card-h) / -2) 0 0 calc(var(--tc-card-w) / -2);
     transform-style: preserve-3d;
-    transform: rotateX(-5deg) rotateY(var(--tc-spin, 0deg));
+    transform: rotateX(-5deg) rotateY(0deg);   /* rotateY driven from script.js */
     will-change: transform;
 }
 
@@ -253,22 +254,21 @@ body.light-mode .cv-download-btn {
 
     transform: rotateY(var(--tc-angle)) translateZ(var(--tc-radius));
     border-radius: 14px;
-    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.55);
+    /* Shadow blur kept modest: a large-radius shadow is re-rasterised on every
+       card on every frame of the spin, and at 40px it was one of the costlier
+       parts of the component for something barely visible on a dark ground. */
+    box-shadow: 0 10px 18px rgba(0, 0, 0, 0.5);
     /* Deliberately NOT backface-visibility:hidden. Hiding backfaces removes the
        far half of the ring, which is exactly what makes it read as a flat arc
        instead of a full 360 circle. */
     transition: border-color 0.3s ease, box-shadow 0.3s ease;
-
-    /* mirrored floor, the detail that gives the reference its depth.
-       WebKit-only, so it degrades to a plain card elsewhere. */
-    -webkit-box-reflect: below 8px linear-gradient(transparent, transparent 55%, rgba(0, 0, 0, 0.28));
 }
 
 .tech-stack-container.is-3d .tech-card:hover {
     /* the flat layout's translateY lift would fight the 3D placement */
     transform: rotateY(var(--tc-angle)) translateZ(var(--tc-radius));
     border-color: var(--accent-color);
-    box-shadow: 0 22px 50px rgba(0, 0, 0, 0.65);
+    box-shadow: 0 14px 26px rgba(0, 0, 0, 0.6);
 }
 
 .tech-stack-container.is-3d .tech-logo {
