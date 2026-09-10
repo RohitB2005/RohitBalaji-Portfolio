@@ -110,7 +110,7 @@ main p {
     height: 200px;
     border-radius: 50%;
     border: 4px solid var(--text-primary);
-    margin: 3rem auto 4rem;
+    margin: 1.5rem auto 2.5rem;
     object-fit: cover;
 }
 
@@ -167,19 +167,205 @@ body.light-mode .cv-download-btn {
     margin-bottom: 1rem;
     object-fit: contain;
 }
-.javafx-logo {
-    transform: scale(1.5); 
-}
-
-.java-logo {
-    transform: scale(1.3); 
-}
-
 .tech-card p {
     margin: 0;
     font-size: 1.6rem;
     font-weight: 500;
     color: var(--text-primary);
+}
+
+/* ========================================
+   TECH CAROUSEL (Languages & Frameworks)
+   The flat .tech-stack-container above stays the baseline layout: it is what
+   renders with no JS, under prefers-reduced-motion, and on narrow screens.
+   script.js only adds .is-3d where the ring actually fits.
+   ======================================== */
+
+.tech-stack-container.is-3d {
+    --tc-card-w: 130px;
+    --tc-card-h: 150px;
+    --tc-radius: 500px;
+
+    /* Full-bleed: a 15-card ring is ~1130px across, wider than main's 900px
+       column. overflow:hidden keeps that off the document width. */
+    width: 100vw;
+    position: relative;
+    left: 50%;
+    margin-left: -50vw;
+    overflow: hidden;
+
+    display: block;
+    /* Cards project to ~227px under perspective, so this only needs to clear
+       that plus a little breathing room — 330px left ~53px of dead space
+       between the section title and the top of the ring. */
+    /* Height only has to clear the ring's projected extent; because the ring's
+       origin is pinned above, growing this adds room at the BOTTOM rather than
+       pushing the ring away from the section title. */
+    height: 305px;
+    margin-top: -0.5rem;
+    margin-bottom: 0;
+    padding-top: 0;
+    box-sizing: border-box;
+
+    perspective: 1500px;
+    perspective-origin: 50% 46%;
+
+    contain: layout paint;
+    cursor: grab;
+    touch-action: pan-y;
+    /* without these a drag selects the card labels or starts an image drag
+       instead of spinning the ring */
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.tech-stack-container.is-3d:active { cursor: grabbing; }
+
+.tech-stack-container.is-3d img {
+    -webkit-user-drag: none;
+    user-drag: none;
+    pointer-events: none;
+}
+
+.tech-stack-container.is-3d .tech-ring {
+    position: absolute;
+    left: 50%;
+    top: 115px;                 /* fixed, not 50% — see note on height below */
+    width: var(--tc-card-w);
+    height: var(--tc-card-h);
+    margin: calc(var(--tc-card-h) / -2) 0 0 calc(var(--tc-card-w) / -2);
+    transform-style: preserve-3d;
+    transform: rotateX(-5deg) rotateY(0deg);   /* rotateY driven from script.js */
+    will-change: transform;
+}
+
+.tech-stack-container.is-3d .tech-card {
+    position: absolute;
+    inset: 0;
+    width: var(--tc-card-w);
+    height: var(--tc-card-h);
+    padding: 1.4rem 0.8rem;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+
+    transform: rotateY(var(--tc-angle)) translateZ(var(--tc-radius));
+    border-radius: 14px;
+    /* Shadow blur kept modest: a large-radius shadow is re-rasterised on every
+       card on every frame of the spin, and at 40px it was one of the costlier
+       parts of the component for something barely visible on a dark ground. */
+    box-shadow: 0 10px 18px rgba(0, 0, 0, 0.5);
+    /* Deliberately NOT backface-visibility:hidden. Hiding backfaces removes the
+       far half of the ring, which is exactly what makes it read as a flat arc
+       instead of a full 360 circle. */
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.tech-stack-container.is-3d .tech-card:hover {
+    /* the flat layout's translateY lift would fight the 3D placement */
+    transform: rotateY(var(--tc-angle)) translateZ(var(--tc-radius));
+    border-color: var(--accent-color);
+    box-shadow: 0 14px 26px rgba(0, 0, 0, 0.6);
+}
+
+.tech-stack-container.is-3d .tech-logo {
+    width: 58px;
+    height: 58px;
+    margin-bottom: 0.4rem;
+}
+
+.tech-stack-container.is-3d .tech-card p {
+    font-size: 1.35rem;
+    line-height: 1.2;
+}
+
+/* Ring diameter has to track the viewport or the sides get clipped. */
+@media screen and (max-width: 1200px) {
+    .tech-stack-container.is-3d { --tc-radius: 400px; height: 292px; }
+}
+
+@media screen and (max-width: 980px) {
+    .tech-stack-container.is-3d {
+        --tc-radius: 330px;
+        --tc-card-w: 115px;
+        --tc-card-h: 135px;
+        height: 270px;
+    }
+}
+
+.tech-carousel-hint {
+    display: none;
+    text-align: center;
+    margin: 0.5rem 0 0;
+    font-size: 1.3rem;
+    letter-spacing: 0.5px;
+    color: var(--text-secondary);
+    opacity: 0.55;
+}
+
+.tech-stack-container.is-3d ~ .tech-carousel-hint { display: block; }
+
+/* ========================================
+   PROJECTS — featured tier + compact "also built" tier
+   ======================================== */
+
+.projects-subhead {
+    text-align: center;
+    font-size: 1.5rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    opacity: 0.7;
+    margin: 4.5rem 0 0;
+}
+
+.projects-compact {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.project-card-compact {
+    background-color: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 1.8rem 2rem;
+    flex: 1 1 280px;
+    max-width: 400px;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.project-card-compact:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.project-card-compact h3 {
+    font-size: 1.8rem;
+    color: var(--text-primary);
+    margin: 0 0 0.8rem;
+}
+
+.project-card-compact p {
+    font-size: 1.45rem;
+    line-height: 1.55;
+    color: var(--text-secondary);
+    margin: 0 0 1.5rem;
+    flex-grow: 1;
+}
+
+.project-card-compact .project-links { gap: 0.8rem; }
+
+.project-card-compact .project-button {
+    padding: 0.7rem 1.4rem;
+    font-size: 1.35rem;
 }
 
 .skills-container {
@@ -741,8 +927,16 @@ body.light-mode .credential-link {
        Now grows to the original 400px cap but is free to shrink and wrap. */
     flex: 1 1 280px;
     max-width: 400px;
+    /* 280px is the right basis for tablet (2 per row) and phones (1), but at
+       desktop it lets FOUR cards share a 1256px row, shrinking each to ~295px.
+       Raising the basis above 1300px pins it back to 3 per row at the original
+       402px. */
     display: flex;
     flex-direction: column;
+}
+
+@media screen and (min-width: 1300px) {
+    .project-card { flex-basis: 380px; }
 }
 
 .project-card:hover {
@@ -965,6 +1159,51 @@ body.light-mode #theme-toggle:hover {
     .about-hero-name {
         font-size: 4rem;
     }
+}
+
+/* --- Achievement pills (hero) --- */
+.about-awards {
+    list-style: none;
+    /* Equal-width pills: with auto widths the divider between them sits left of
+       the photo's centre line, which reads as misaligned even though the group
+       itself is centred. Splitting a fixed track in two puts the seam dead
+       centre, under the middle of the profile photo. */
+    margin: 1.2rem auto 0;
+    padding: 0;
+    max-width: 700px;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.about-awards li {
+    flex: 1 1 0;
+    min-width: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.8rem;
+    background-color: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 999px;
+    padding: 0.6rem 1.4rem;
+    font-size: 1.4rem;
+    color: var(--text-secondary);
+    white-space: nowrap;
+}
+
+.about-awards .aw-mark {
+    color: var(--accent-color);
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+.about-awards .aw-sub { opacity: 0.6; font-size: 1.25rem; }
+
+@media screen and (max-width: 620px) {
+    /* stack rather than squeeze once two pills no longer fit side by side */
+    .about-awards li { flex: 1 1 100%; font-size: 1.3rem; padding: 0.5rem 1.1rem; }
 }
 
 .about-anim {
@@ -1437,3 +1676,5 @@ body.light-mode [data-tooltip]::after {
 .myH2 { text-align:center; font-size: 4rem; }
 .myP { text-align: justify; padding-left:15%; padding-right:15%; font-size: 20px; }
 @media all and (max-width:700px){ .myP { padding:2%; } }
+/* The ring sits closer to its heading than a flat grid needs to. */
+#tech-stack h2 { margin-bottom: 1rem; }
