@@ -182,20 +182,43 @@ body.light-mode .cv-download-btn {
    ======================================== */
 
 .tech-stack-container.is-3d {
-    --tc-card-w: 150px;
-    --tc-card-h: 165px;
-    --tc-radius: 430px;
-    display: block;
+    --tc-card-w: 130px;
+    --tc-card-h: 150px;
+    --tc-radius: 500px;
+
+    /* Full-bleed: a 15-card ring is ~1130px across, wider than main's 900px
+       column. overflow:hidden keeps that off the document width. */
+    width: 100vw;
     position: relative;
-    height: 300px;
-    margin: 2rem 0 1rem;
-    perspective: 1600px;
-    perspective-origin: 50% 42%;
+    left: 50%;
+    margin-left: -50vw;
+    overflow: hidden;
+
+    display: block;
+    height: 400px;
+    margin-top: 1rem;
+    margin-bottom: 0;
+    padding-top: 1rem;
+    box-sizing: border-box;
+
+    perspective: 1500px;
+    perspective-origin: 50% 44%;
+
     cursor: grab;
     touch-action: pan-y;
+    /* without these a drag selects the card labels or starts an image drag
+       instead of spinning the ring */
+    user-select: none;
+    -webkit-user-select: none;
 }
 
 .tech-stack-container.is-3d:active { cursor: grabbing; }
+
+.tech-stack-container.is-3d img {
+    -webkit-user-drag: none;
+    user-drag: none;
+    pointer-events: none;
+}
 
 .tech-stack-container.is-3d .tech-ring {
     position: absolute;
@@ -203,9 +226,9 @@ body.light-mode .cv-download-btn {
     top: 50%;
     width: var(--tc-card-w);
     height: var(--tc-card-h);
-    margin: calc(var(--tc-card-h) / -2) 0 0 calc(var(--tc-card-w) / -2);
+    margin: calc(var(--tc-card-h) / -2 - 20px) 0 0 calc(var(--tc-card-w) / -2);
     transform-style: preserve-3d;
-    transform: rotateX(-7deg) rotateY(var(--tc-spin, 0deg));
+    transform: rotateX(-8deg) rotateY(var(--tc-spin, 0deg));
     will-change: transform;
 }
 
@@ -214,33 +237,65 @@ body.light-mode .cv-download-btn {
     inset: 0;
     width: var(--tc-card-w);
     height: var(--tc-card-h);
-    padding: 1.5rem 1rem;
+    padding: 1.4rem 0.8rem;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    gap: 0.4rem;
+
     transform: rotateY(var(--tc-angle)) translateZ(var(--tc-radius));
-    box-shadow: 0 14px 30px rgba(0, 0, 0, 0.45);
+    border-radius: 14px;
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.55);
     backface-visibility: hidden;
     transition: border-color 0.3s ease, box-shadow 0.3s ease;
+
+    /* mirrored floor, the detail that gives the reference its depth.
+       WebKit-only, so it degrades to a plain card elsewhere. */
+    -webkit-box-reflect: below 8px linear-gradient(transparent, transparent 55%, rgba(0, 0, 0, 0.28));
 }
 
-/* the lift-on-hover from the flat layout would fight the 3D transform */
 .tech-stack-container.is-3d .tech-card:hover {
+    /* the flat layout's translateY lift would fight the 3D placement */
     transform: rotateY(var(--tc-angle)) translateZ(var(--tc-radius));
     border-color: var(--accent-color);
-    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.55);
+    box-shadow: 0 22px 50px rgba(0, 0, 0, 0.65);
+}
+
+.tech-stack-container.is-3d .tech-logo {
+    width: 58px;
+    height: 58px;
+    margin-bottom: 0.4rem;
+}
+
+.tech-stack-container.is-3d .tech-card p {
+    font-size: 1.35rem;
+    line-height: 1.2;
+}
+
+/* Ring diameter has to track the viewport or the sides get clipped. */
+@media screen and (max-width: 1200px) {
+    .tech-stack-container.is-3d { --tc-radius: 400px; height: 370px; }
+}
+
+@media screen and (max-width: 980px) {
+    .tech-stack-container.is-3d {
+        --tc-radius: 330px;
+        --tc-card-w: 115px;
+        --tc-card-h: 135px;
+        height: 340px;
+    }
 }
 
 .tech-carousel-hint {
     display: none;
     text-align: center;
-    margin: 0;
+    margin: 0.5rem 0 0;
     font-size: 1.3rem;
     letter-spacing: 0.5px;
     color: var(--text-secondary);
-    opacity: 0.6;
+    opacity: 0.55;
 }
 
 .tech-stack-container.is-3d ~ .tech-carousel-hint { display: block; }
@@ -1101,8 +1156,13 @@ body.light-mode #theme-toggle:hover {
 /* --- Achievement pills (hero) --- */
 .about-awards {
     list-style: none;
-    margin: 1.2rem 0 0;
+    /* Equal-width pills: with auto widths the divider between them sits left of
+       the photo's centre line, which reads as misaligned even though the group
+       itself is centred. Splitting a fixed track in two puts the seam dead
+       centre, under the middle of the profile photo. */
+    margin: 1.2rem auto 0;
     padding: 0;
+    max-width: 700px;
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
@@ -1110,8 +1170,11 @@ body.light-mode #theme-toggle:hover {
 }
 
 .about-awards li {
+    flex: 1 1 0;
+    min-width: 0;
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 0.8rem;
     background-color: var(--card-bg);
     border: 1px solid var(--card-border);
@@ -1130,8 +1193,9 @@ body.light-mode #theme-toggle:hover {
 
 .about-awards .aw-sub { opacity: 0.6; font-size: 1.25rem; }
 
-@media screen and (max-width: 520px) {
-    .about-awards li { font-size: 1.3rem; padding: 0.5rem 1.1rem; }
+@media screen and (max-width: 620px) {
+    /* stack rather than squeeze once two pills no longer fit side by side */
+    .about-awards li { flex: 1 1 100%; font-size: 1.3rem; padding: 0.5rem 1.1rem; }
 }
 
 .about-anim {

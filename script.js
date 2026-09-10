@@ -664,11 +664,12 @@ function initAboutAnimation() {
     const nameEl    = document.querySelector('.about-hero-name');
     const roles     = document.querySelector('.about-roles');
     const photo     = document.querySelector('.profile-photo');
+    const awards    = document.querySelector('.about-awards');
     const bios      = document.querySelectorAll('#about p:not(.about-greeting):not(.about-roles)');
     const cvBtn     = document.querySelector('.cv-download-btn');
 
     // Apply initial hidden state to all fade elements
-    [greeting, roles, photo, ...bios, cvBtn].forEach(el => {
+    [greeting, roles, awards, photo, ...bios, cvBtn].forEach(el => {
         if (el) el.classList.add('about-anim');
     });
 
@@ -686,7 +687,7 @@ function initAboutAnimation() {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
         if (typedEl) typedEl.textContent = fullName;
         if (cursorEl) cursorEl.style.display = 'none';
-        [greeting, nameEl, roles, photo, ...bios, cvBtn].forEach(el => {
+        [greeting, nameEl, roles, awards, photo, ...bios, cvBtn].forEach(el => {
             if (el) el.classList.add('about-anim-visible');
         });
         return;
@@ -713,10 +714,11 @@ function initAboutAnimation() {
     // Everything else staggers in after the name finishes
     [
         { el: roles,    delay: 950  },
-        { el: photo,    delay: 1150 },
-        { el: bios[0],  delay: 1400 },
-        { el: bios[1],  delay: 1650 },
-        { el: cvBtn,    delay: 1900 },
+        { el: awards,   delay: 1120 },
+        { el: photo,    delay: 1320 },
+        { el: bios[0],  delay: 1550 },
+        { el: bios[1],  delay: 1780 },
+        { el: cvBtn,    delay: 2010 },
     ].forEach(({ el, delay }) => {
         if (el) setTimeout(() => el.classList.add('about-anim-visible'), delay);
     });
@@ -799,21 +801,39 @@ if (scene) {
     const cards = [...ring.querySelectorAll('.tech-card')];
     if (!cards.length) return;
 
-    // The ring needs real width; below this the flat grid is the better layout
-    // (and re-introducing a fixed-width 3D element here would undo the mobile
-    // overflow fix).
+    // Below this the flat grid is the better layout, and re-introducing a
+    // fixed-width 3D element here would undo the mobile overflow fix.
     const wideEnough = window.matchMedia('(min-width: 780px)');
     const calm       = window.matchMedia('(prefers-reduced-motion: reduce)');
 
-    let spin = 0, drift = 0.02, dragging = false, lastX = 0, raf = null, hovered = false;
+    const DRIFT = 0.075;           // deg per frame — ~4.5 deg/sec
+    const DRAG_SCALE = 0.28;       // deg per px dragged
+    const FRICTION = 0.94;         // fling decay
+
+    let spin = 0, momentum = 0;
+    let dragging = false, moved = false, lastX = 0, raf = null, hovered = false;
 
     cards.forEach((card, i) => {
         card.style.setProperty('--tc-angle', `${(360 / cards.length) * i}deg`);
     });
 
-    function frame() {
-        if (!dragging && !hovered) spin += drift;
+    // Writing the transform is separate from the rAF loop so a drag updates
+    // immediately. requestAnimationFrame is throttled in background tabs and
+    // under low-power mode; without this the ring would not follow the pointer.
+    function render() {
         ring.style.setProperty('--tc-spin', spin.toFixed(3) + 'deg');
+    }
+
+    function frame() {
+        if (dragging) {
+            // position is driven directly by the pointer
+        } else if (Math.abs(momentum) > 0.01) {
+            spin += momentum;
+            momentum *= FRICTION;
+        } else if (!hovered) {
+            spin += DRIFT;
+        }
+        render();
         raf = requestAnimationFrame(frame);
     }
 
@@ -831,18 +851,43 @@ if (scene) {
 
     wrap.addEventListener('pointerenter', () => { hovered = true; });
     wrap.addEventListener('pointerleave', () => { hovered = false; });
+
     wrap.addEventListener('pointerdown', (e) => {
         if (!wrap.classList.contains('is-3d')) return;
-        dragging = true; lastX = e.clientX;
+        // stop the browser starting a text selection or an image drag
+        e.preventDefault();
+        dragging = true;
+        moved = false;
+        momentum = 0;
+        lastX = e.clientX;
         wrap.setPointerCapture(e.pointerId);
     });
+
     wrap.addEventListener('pointermove', (e) => {
         if (!dragging) return;
-        spin += (e.clientX - lastX) * 0.35;
+        const dx = e.clientX - lastX;
+        if (Math.abs(dx) > 1) moved = true;
+        spin += dx * DRAG_SCALE;
+        momentum = dx * DRAG_SCALE;   // carries the fling when released
         lastX = e.clientX;
+        render();
     });
-    ['pointerup', 'pointercancel'].forEach(ev =>
-        wrap.addEventListener(ev, () => { dragging = false; }));
+
+    function endDrag(e) {
+        if (!dragging) return;
+        dragging = false;
+        if (e && e.pointerId !== undefined && wrap.hasPointerCapture(e.pointerId)) {
+            wrap.releasePointerCapture(e.pointerId);
+        }
+    }
+    wrap.addEventListener('pointerup', endDrag);
+    wrap.addEventListener('pointercancel', endDrag);
+
+    // a drag that ended on a card shouldn't also register as a click
+    wrap.addEventListener('click', (e) => { if (moved) { e.preventDefault(); e.stopPropagation(); } }, true);
+
+    // native image drag is the other way this breaks
+    wrap.addEventListener('dragstart', (e) => e.preventDefault());
 
     wideEnough.addEventListener('change', apply);
     calm.addEventListener('change', apply);
