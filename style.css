@@ -195,14 +195,20 @@ body.light-mode .cv-download-btn {
     overflow: hidden;
 
     display: block;
-    height: 400px;
-    margin-top: 1rem;
+    /* Cards project to ~227px under perspective, so this only needs to clear
+       that plus a little breathing room — 330px left ~53px of dead space
+       between the section title and the top of the ring. */
+    /* Height only has to clear the ring's projected extent; because the ring's
+       origin is pinned above, growing this adds room at the BOTTOM rather than
+       pushing the ring away from the section title. */
+    height: 305px;
+    margin-top: -0.5rem;
     margin-bottom: 0;
-    padding-top: 1rem;
+    padding-top: 0;
     box-sizing: border-box;
 
     perspective: 1500px;
-    perspective-origin: 50% 44%;
+    perspective-origin: 50% 46%;
 
     cursor: grab;
     touch-action: pan-y;
@@ -223,12 +229,12 @@ body.light-mode .cv-download-btn {
 .tech-stack-container.is-3d .tech-ring {
     position: absolute;
     left: 50%;
-    top: 50%;
+    top: 115px;                 /* fixed, not 50% — see note on height below */
     width: var(--tc-card-w);
     height: var(--tc-card-h);
-    margin: calc(var(--tc-card-h) / -2 - 20px) 0 0 calc(var(--tc-card-w) / -2);
+    margin: calc(var(--tc-card-h) / -2) 0 0 calc(var(--tc-card-w) / -2);
     transform-style: preserve-3d;
-    transform: rotateX(-8deg) rotateY(var(--tc-spin, 0deg));
+    transform: rotateX(-5deg) rotateY(var(--tc-spin, 0deg));
     will-change: transform;
 }
 
@@ -248,7 +254,9 @@ body.light-mode .cv-download-btn {
     transform: rotateY(var(--tc-angle)) translateZ(var(--tc-radius));
     border-radius: 14px;
     box-shadow: 0 18px 40px rgba(0, 0, 0, 0.55);
-    backface-visibility: hidden;
+    /* Deliberately NOT backface-visibility:hidden. Hiding backfaces removes the
+       far half of the ring, which is exactly what makes it read as a flat arc
+       instead of a full 360 circle. */
     transition: border-color 0.3s ease, box-shadow 0.3s ease;
 
     /* mirrored floor, the detail that gives the reference its depth.
@@ -276,7 +284,7 @@ body.light-mode .cv-download-btn {
 
 /* Ring diameter has to track the viewport or the sides get clipped. */
 @media screen and (max-width: 1200px) {
-    .tech-stack-container.is-3d { --tc-radius: 400px; height: 370px; }
+    .tech-stack-container.is-3d { --tc-radius: 400px; height: 292px; }
 }
 
 @media screen and (max-width: 980px) {
@@ -284,7 +292,7 @@ body.light-mode .cv-download-btn {
         --tc-radius: 330px;
         --tc-card-w: 115px;
         --tc-card-h: 135px;
-        height: 340px;
+        height: 270px;
     }
 }
 
@@ -1668,3 +1676,5 @@ body.light-mode [data-tooltip]::after {
 .myH2 { text-align:center; font-size: 4rem; }
 .myP { text-align: justify; padding-left:15%; padding-right:15%; font-size: 20px; }
 @media all and (max-width:700px){ .myP { padding:2%; } }
+/* The ring sits closer to its heading than a flat grid needs to. */
+#tech-stack h2 { margin-bottom: 1rem; }
