@@ -76,7 +76,10 @@ main {
     position: relative; 
     z-index: 1; 
     color: var(--text-primary);
-    padding-top: 120px; 
+    /* 100px clears the 105px nav box: its links sit in the top 65px and the
+       bar is transparent until scrolled, so this still leaves ~36px of air
+       above "Hi, I'm" and lets the whole About text fit a ~1470x800 window. */
+    padding-top: 100px;
     max-width: 900px; 
     margin: 0 auto; 
     padding-left: 2rem; 
@@ -110,7 +113,8 @@ main p {
     height: 200px;
     border-radius: 50%;
     border: 4px solid var(--text-primary);
-    margin: 1.5rem auto 2.5rem;
+    /* bottom gap matches the 18px between the About paragraphs */
+    margin: 1.5rem auto 1.8rem;
     object-fit: cover;
 }
 
@@ -927,16 +931,16 @@ body.light-mode .credential-link {
        Now grows to the original 400px cap but is free to shrink and wrap. */
     flex: 1 1 280px;
     max-width: 400px;
-    /* 280px is the right basis for tablet (2 per row) and phones (1), but at
-       desktop it lets FOUR cards share a 1256px row, shrinking each to ~295px.
-       Raising the basis above 1300px pins it back to 3 per row at the original
-       402px. */
+    /* 280px is the right basis for tablet (2 per row) and phones (1), but from
+       a ~1235px viewport it lets FOUR cards share a row, shrinking each to
+       ~290px. A 320px basis fits three but never four at any desktop width, and
+       the cards still grow to the original 402px once there is room. */
     display: flex;
     flex-direction: column;
 }
 
-@media screen and (min-width: 1300px) {
-    .project-card { flex-basis: 380px; }
+@media screen and (min-width: 1200px) {
+    .project-card { flex-basis: 320px; }
 }
 
 .project-card:hover {
@@ -946,7 +950,10 @@ body.light-mode .credential-link {
 
 .project-image {
     width: 100%;
-    height: 220px;
+    /* Keep the 400x220 frame's shape rather than a fixed 220px height, so a
+       narrower phone card scales the picture down instead of cropping its sides. */
+    height: auto;
+    aspect-ratio: 400 / 220;
     object-fit: cover;
     border-radius: 12px 12px 0 0;
     overflow: hidden;
@@ -973,14 +980,19 @@ body.light-mode .credential-link {
     flex-grow: 1;
 }
 
+/* Inline pills with balanced wrapping, so a list never ends on a lone pill
+   (9 tags used to wrap 4/4/1; now 3/3/3). font-size: 0 removes the whitespace
+   between the inline-blocks, and the pills' margins do the spacing. Browsers
+   without text-wrap: balance fall back to ordinary wrapping. */
 .project-tech-list {
-    margin: 2rem 0;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.8rem;
+    margin: 2rem 0 1.2rem;
+    font-size: 0;
+    text-wrap: balance;
 }
 
 .project-tech-list span {
+    display: inline-block;
+    margin: 0 0.8rem 0.8rem 0;
     background-color: var(--card-border);
     color: var(--text-secondary);
     padding: 0.5rem 1rem;
@@ -1019,6 +1031,25 @@ body.light-mode .project-tech-list span {
 body.light-mode .project-button {
     color: #FFF;
     font-weight: 700;
+}
+
+/* Three buttons need ~380px at the standard padding but a desktop card has
+   360px, so tighten them to share one row there. Narrower cards still wrap. */
+.project-info .project-links:has(> .project-button:nth-child(3)) { gap: 0.8rem; }
+.project-info .project-links:has(> .project-button:nth-child(3)) .project-button { padding: 1rem 1.4rem; }
+
+/* When the card is too narrow even for that (tablets, phones, 1024-1240px
+   laptops), wrapping left the third button alone on a second row. Lay the
+   three out as two halves over a full-width third, sized by the card itself. */
+.project-info { container-type: inline-size; }
+
+@container (max-width: 339px) {
+    .project-links:has(> .project-button:nth-child(3)) {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.8rem;
+    }
+    .project-links:has(> .project-button:nth-child(3)) > :nth-child(3) { grid-column: 1 / -1; }
 }
 
 #contact {
@@ -1164,13 +1195,11 @@ body.light-mode #theme-toggle:hover {
 /* --- Achievement pills (hero) --- */
 .about-awards {
     list-style: none;
-    /* Equal-width pills: with auto widths the divider between them sits left of
-       the photo's centre line, which reads as misaligned even though the group
-       itself is centred. Splitting a fixed track in two puts the seam dead
-       centre, under the middle of the profile photo. */
+    /* Pills size to their text. Three equal-width pills in a fixed track clipped
+       the longest one; with an odd count the middle pill now sits under the
+       photo's centre line, which is what the old equal-width split was for. */
     margin: 1.2rem auto 0;
     padding: 0;
-    max-width: 700px;
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
@@ -1178,8 +1207,7 @@ body.light-mode #theme-toggle:hover {
 }
 
 .about-awards li {
-    flex: 1 1 0;
-    min-width: 0;
+    flex: 0 0 auto;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -1201,9 +1229,15 @@ body.light-mode #theme-toggle:hover {
 
 .about-awards .aw-sub { opacity: 0.6; font-size: 1.25rem; }
 
-@media screen and (max-width: 620px) {
-    /* stack rather than squeeze once two pills no longer fit side by side */
-    .about-awards li { flex: 1 1 100%; font-size: 1.3rem; padding: 0.5rem 1.1rem; }
+@media screen and (max-width: 900px) {
+    /* a little smaller on tablets so all three still share one row */
+    .about-awards { gap: 0.8rem; }
+    .about-awards li { font-size: 1.3rem; padding: 0.5rem 1.1rem; gap: 0.6rem; }
+}
+
+@media screen and (max-width: 765px) {
+    /* stack once three no longer fit side by side, rather than wrap 2 + 1 */
+    .about-awards { flex-direction: column; align-items: center; }
 }
 
 .about-anim {
@@ -1664,6 +1698,12 @@ body.light-mode #stars3 { animation-duration: 25s; }
 
 body.light-mode [data-tooltip]::after {
     background-color: rgba(20, 30, 40, 0.92);
+}
+
+/* Touch screens can't hover, and the hidden tooltips still widened the page
+   enough to let phones scroll sideways. */
+@media (hover: none) {
+    [data-tooltip]::after { display: none; }
 }
 
 @keyframes inM { 50% { transform: rotate(0deg); } 100% { transform: rotate(45deg); } }
