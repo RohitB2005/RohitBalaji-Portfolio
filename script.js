@@ -1,4 +1,4 @@
-$(document).ready(function() {
+(function () {
 
     // --- Navbar Hamburger Logic ---
     // Single source of truth for open/closed. The previous version toggled a
@@ -52,14 +52,43 @@ $(document).ready(function() {
         if (e.matches) setMenu(false);
     });
 
-    // --- Sticky Navbar Logic ---
-    $(window).scroll(function() {
-        if ($(this).scrollTop() > 10) {
-            $('.nav').addClass("affix");
-        } else {
-            $('.nav').removeClass("affix");
+    // --- Sticky Navbar + current-section highlight ---
+    const nav = document.querySelector('.nav');
+    const navLinks = [...document.querySelectorAll('.navlinks a[href^="#"]')];
+    const spySections = navLinks
+        .map(function (a) { return document.querySelector(a.getAttribute('href')); })
+        .filter(Boolean);
+
+    function updateNavBar() {
+        if (nav) nav.classList.toggle('affix', window.scrollY > 10);
+
+        // The current section is the last one whose top has passed 40% of the
+        // way down the window. At the very bottom of the page the last section
+        // is too short to get there, so it wins by default.
+        const line = window.innerHeight * 0.4;
+        let current = null;
+        spySections.forEach(function (sec) {
+            if (sec.getBoundingClientRect().top <= line) current = sec;
+        });
+        if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2) {
+            current = spySections[spySections.length - 1];
         }
-    });
+        navLinks.forEach(function (a) {
+            const on = !!current && a.getAttribute('href') === '#' + current.id;
+            a.classList.toggle('is-active', on);
+            if (on) a.setAttribute('aria-current', 'true');
+            else a.removeAttribute('aria-current');
+        });
+    }
+
+    let navTicking = false;
+    window.addEventListener('scroll', function () {
+        if (navTicking) return;
+        navTicking = true;
+        requestAnimationFrame(function () { navTicking = false; updateNavBar(); });
+    }, { passive: true });
+    window.addEventListener('resize', updateNavBar);
+    updateNavBar();
 
     // --- Theme Toggle Logic ---
     // The initial theme is applied by the inline script at the top of <body>,
@@ -83,6 +112,8 @@ $(document).ready(function() {
             document.documentElement.classList.toggle('light-mode', isLight);
             localStorage.setItem('theme', isLight ? 'light' : 'dark');
             syncThemeButton();
+            const themeColor = document.querySelector('meta[name="theme-color"]');
+            if (themeColor) themeColor.content = isLight ? '#669ec3' : '#0e131a';
 
             themeToggle.classList.add('rotate-icon');
             setTimeout(function () {
@@ -90,7 +121,7 @@ $(document).ready(function() {
             }, 500);
         });
     }
-});
+})();
 
 /* ========================================
    CERTIFICATIONS COMPONENT JAVASCRIPT
@@ -132,7 +163,7 @@ const certificates = [
     },
     {
         id: 3,
-        color: "#0F62FE",
+        color: "#8A3FFC",   // IBM purple, so the two IBM cards don't read as one blue
         provider: "IBM",
         title: "Building AI Agents & Agentic Workflows",
         credentialId: "7URFI9S41FP5",
@@ -183,7 +214,9 @@ const btnGrid = document.getElementById('btn-grid');
 
 function renderCards() {
     scene.innerHTML = '';
-    
+    // Lets the grid pick a column count that never leaves one card alone on a row.
+    scene.style.setProperty('--cert-cols', certGridColumns(certificates.length));
+
     certificates.forEach((cert, index) => {
         const wrapper = document.createElement('div');
         wrapper.className = 'card-wrapper';
@@ -192,22 +225,6 @@ function renderCards() {
         wrapper.addEventListener('mouseenter', () => handleMouseEnter(index));
         wrapper.addEventListener('mouseleave', () => handleMouseLeave());
         wrapper.addEventListener('click', (e) => { e.stopPropagation(); handleCardClick(index); });
-
-        // Keyboard-operable: a bare <div> with a click handler is invisible to
-        // both the tab order and screen readers.
-        wrapper.tabIndex = 0;
-        wrapper.setAttribute('role', 'button');
-        wrapper.setAttribute('aria-pressed', 'false');
-        wrapper.setAttribute('aria-label', `${cert.provider} — ${cert.title}`);
-        wrapper.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') {
-                e.preventDefault();
-                handleCardClick(index);
-            }
-        });
-        // Mirror hover peek for keyboard users.
-        wrapper.addEventListener('focus', () => handleMouseEnter(index));
-        wrapper.addEventListener('blur', () => handleMouseLeave());
 
         wrapper.dataset.index = index;
 
@@ -221,37 +238,43 @@ function renderCards() {
             return div;
         };
 
+        // The select button covers the face beneath the content, so the card's
+        // own links are never nested inside another control. Its clicks bubble
+        // to the wrapper's handler above; it only exists in the 3D view (CSS).
         const front = createFace('face-front');
         front.innerHTML = `
-<div class="absolute inset-0 pointer-events-auto p-4 text-white" style="position: absolute; padding: 1rem; color: white;">
-    <div style="display: grid; grid-template-columns: 1fr 64px; grid-template-rows: auto auto; gap: 8px; align-items: start;">
-        <div style="grid-column: 1; grid-row: 1;">
-            <div style="font-size: 1.4rem; font-weight: 600; opacity: 0.9;">${cert.provider}</div>
-            <div style="font-size: 1.6rem; font-weight: bold; letter-spacing: -0.5px; word-break: break-word; padding-right: 0.5rem; line-height: 1.3;">${cert.title}</div>
-            <div style="margin-top: 0.5rem; font-size: 1.2rem; opacity: 0.8; font-family: monospace;">Credential ID: ${cert.credentialId}</div>
+<button type="button" class="cert-select" aria-pressed="false" aria-label="${cert.provider} — ${cert.title}"></button>
+<div class="cert-front">
+    <div class="cert-head">
+        <div class="cert-meta">
+            <div class="cert-provider">${cert.provider}</div>
+            <div class="cert-title">${cert.title}</div>
+            <div class="cert-id">Credential ID: ${cert.credentialId}</div>
         </div>
-        <div style="grid-column: 2; grid-row: 1; display:flex; justify-content:center; align-items:flex-start;">
-            <div style="width: 48px; height: 48px; border-radius: 8px; border: 1px solid #e5e7eb; background: white; display: flex; align-items: center; justify-content: center; padding: 4px;">
-                ${cert.logoSrc ? `<img src="${cert.logoSrc}" alt="${cert.provider} logo" style="width: 100%; height: 100%; object-fit: contain;" draggable="false" />` : cert.logoText}
+        <div class="cert-logo-cell">
+            <div class="cert-logo">
+                <img src="${cert.logoSrc}" alt="${cert.provider} logo" draggable="false" />
             </div>
         </div>
-        <div style="grid-column: 1 / span 2; grid-row: 2; margin-top: 4px;">
-            ${cert.courses && cert.courses.length ? `
-                <div style="font-size: 1.2rem;">
-                    <div style="font-weight: 600; margin-bottom: 4px;">Courses Included:</div>
-                    <ul style="list-style-position: inside; list-style-type: disc; margin: 0; padding: 0;">
-                        ${cert.courses.map(c => `<li style="opacity: 0.85; margin: 4px 0;">${c}</li>`).join('')}
-                    </ul>
-                </div>
-            ` : ''}
-        </div>
+        ${cert.courses && cert.courses.length ? `
+        <div class="cert-courses">
+            <div class="cert-courses-label">Courses Included:</div>
+            <ul>
+                ${cert.courses.map(c => `<li>${c}</li>`).join('')}
+            </ul>
+        </div>` : ''}
     </div>
-    <div class="absolute left-0 right-0 bottom-3 flex justify-center gap-3">
-        ${cert.credentialLink ? `<a href="${cert.credentialLink}" target="_blank" class="credential-link text-xs font-semibold underline bg-white/10 px-2 py-0.5 rounded hover:bg-white/20">Show Credential</a>` : ''}
-        <a href="#" class="show-cert-btn text-xs font-semibold underline bg-white/10 px-2 py-0.5 rounded hover:bg-white/20">Show Certificates</a>
+    <div class="cert-actions">
+        ${cert.credentialLink ? `<a href="${cert.credentialLink}" target="_blank" rel="noopener" class="credential-link">Show Credential</a>` : ''}
+        <button type="button" class="show-cert-btn">Show Certificates</button>
     </div>
 </div>
 `;
+
+        const selectBtn = front.querySelector('.cert-select');
+        // Mirror hover peek for keyboard users.
+        selectBtn.addEventListener('focus', () => handleMouseEnter(index));
+        selectBtn.addEventListener('blur', () => handleMouseLeave());
 
         const side = createFace('face-side');
         const back = createFace('face-back');
@@ -263,18 +286,38 @@ function renderCards() {
         scene.appendChild(wrapper);
 
         const showBtn = wrapper.querySelector('.show-cert-btn');
-        if (showBtn) {
-            showBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                openCertificatesModal(cert.mediaLinks || [], cert.title);
-            });
-        }
+        showBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            openCertificatesModal(cert, showBtn);
+        });
     });
     updateUI();
+    syncCardFocus();
 }
 
-// Modal implementation
+// Columns for the grid view at desktop widths: up to five, split so the last
+// row is never a single card (6 -> 3+3, 7 -> 4+3, 9 -> 5+4, 11 -> 4+4+3).
+function certGridColumns(count) {
+    if (count <= 5) return count;
+    return Math.ceil(count / Math.ceil(count / 5));
+}
+
+// In the 3D stack the cards overlap, so only the selected card's links are
+// reachable with Tab; in the grid every card's links are.
+function syncCardFocus() {
+    document.querySelectorAll('.card-wrapper').forEach((card, idx) => {
+        const reachable = currentView !== '3d' || idx === selectedIndex;
+        card.querySelectorAll('.cert-actions a, .cert-actions button').forEach(el => {
+            if (reachable) el.removeAttribute('tabindex');
+            else el.setAttribute('tabindex', '-1');
+        });
+    });
+}
+
+// Certificates modal. A native <dialog> opened with showModal() keeps focus
+// inside it and makes the page behind inert; Escape, a backdrop click and the
+// Close button all dismiss it, and focus returns to the button that opened it.
 (function createCertificatesModal() {
     // Single handler reference at IIFE scope — only one can ever be registered at a time
     let modalKeyHandler = null;
@@ -286,44 +329,88 @@ function renderCards() {
         }
     }
 
-    const modalOverlay = document.createElement('div');
-    modalOverlay.className = 'cert-modal-overlay hidden';
-
-    const modal = document.createElement('div');
+    const modal = document.createElement('dialog');
     modal.className = 'cert-modal';
-
     modal.innerHTML = `
-        <div style="display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 1rem;">
-            <div style="font-size: 1.8rem; font-weight: bold;">Certificates</div>
-            <button class="cert-modal-close">Close</button>
-        </div>
-        <div class="cert-modal-body" style="margin-top: 1rem;">
-            <div style="font-size: 1.4rem; opacity: 0.7;">No images available.</div>
+        <div class="cert-modal-inner">
+            <div class="cert-modal-header">
+                <div class="cert-modal-heading">Certificates</div>
+                <button type="button" class="cert-modal-close">Close</button>
+            </div>
+            <div class="cert-modal-body"></div>
         </div>
     `;
+    document.body.appendChild(modal);
 
-    modalOverlay.appendChild(modal);
-    document.body.appendChild(modalOverlay);
+    const body = modal.querySelector('.cert-modal-body');
+    const supportsDialog = typeof modal.showModal === 'function';
+    if (!supportsDialog) modal.classList.add('no-dialog');
+    let opener = null;
+    // Set while the large view is showing: Escape steps back to the grid first.
+    let backToGrid = null;
 
-    modalOverlay.querySelector('.cert-modal-close').addEventListener('click', () => {
+    function closeModal() {
+        if (supportsDialog) {
+            if (modal.open) modal.close();
+        } else if (modal.hasAttribute('open')) {
+            modal.removeAttribute('open');
+            onClosed();
+        }
+    }
+
+    function onClosed() {
         clearKeyHandler();
-        modalOverlay.classList.add('hidden');
-    });
+        backToGrid = null;
+        document.body.classList.remove('modal-open');
+        if (opener && opener.isConnected) opener.focus({ preventScroll: true });
+        opener = null;
+    }
 
-    window.openCertificatesModal = function(imageList, title) {
+    modal.querySelector('.cert-modal-close').addEventListener('click', closeModal);
+    modal.addEventListener('close', onClosed);
+    // The dialog has no padding of its own, so a click that targets it directly
+    // landed on the backdrop around the panel.
+    modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+    modal.addEventListener('cancel', (e) => {
+        if (backToGrid) {
+            e.preventDefault();
+            backToGrid();
+        }
+    });
+    if (!supportsDialog) {
+        document.addEventListener('keydown', (e) => {
+            if (e.key !== 'Escape' || !modal.hasAttribute('open')) return;
+            if (backToGrid) backToGrid(); else closeModal();
+        });
+    }
+
+    // Image 0 of a specialization is its overall certificate, then one per course.
+    function altFor(cert, i) {
+        const courses = cert.courses || [];
+        const hasSpecialization = (cert.mediaLinks || []).length === courses.length + 1;
+        if (hasSpecialization && i === 0) return `${cert.title} specialization certificate`;
+        const course = courses[hasSpecialization ? i - 1 : i];
+        return course ? `${course} course certificate` : `${cert.title} certificate ${i + 1}`;
+    }
+
+    window.openCertificatesModal = function(cert, trigger) {
         // Clear any handler left over from a previously opened modal
         clearKeyHandler();
 
-        const body = modal.querySelector('.cert-modal-body');
+        const imageList = cert.mediaLinks || [];
+        const title = cert.title;
+        opener = trigger || document.activeElement;
+        modal.setAttribute('aria-label', `${title} certificates`);
+
         body.innerHTML = '';
 
         const heading = document.createElement('div');
-        heading.style.fontWeight = '600';
-        heading.style.fontSize = '1.6rem';
+        heading.className = 'cert-modal-title';
         heading.textContent = title || 'Certificates';
         body.appendChild(heading);
 
         let currentIndex = -1;
+        let thumbButtons = [];
 
         // Grid cells render at ~160px tall, so they load the 400px thumbnail
         // rather than the full-size scan. Hoisted to this scope so the large
@@ -333,148 +420,92 @@ function renderCards() {
         // Warm a full-size file in the background without blocking anything.
         const prefetch = src => { const p = new Image(); p.src = src; };
 
-        function renderGrid() {
+        function renderGrid(focusIndex) {
             clearKeyHandler();
+            backToGrid = null;
             body.innerHTML = '';
             body.appendChild(heading);
 
             if (!imageList || imageList.length === 0) {
                 const p = document.createElement('div');
-                p.style.fontSize = '1.4rem';
-                p.style.opacity = '0.7';
+                p.className = 'cert-modal-empty';
                 p.textContent = 'No certificate images provided.';
                 body.appendChild(p);
                 return;
             }
 
             const grid = document.createElement('div');
-            grid.style.display = 'grid';
-            grid.style.gridTemplateColumns = 'repeat(2, 1fr)';
-            grid.style.gap = '1rem';
-            grid.style.marginTop = '1rem';
+            grid.className = 'cert-modal-grid';
 
-            if (window.innerWidth >= 768) {
-                grid.style.gridTemplateColumns = 'repeat(3, 1fr)';
-            }
-
-            imageList.forEach((src, idx) => {
-                const imgWrap = document.createElement('div');
-                imgWrap.style.border = '1px solid var(--card-border)';
-                imgWrap.style.borderRadius = '8px';
-                imgWrap.style.overflow = 'hidden';
-                imgWrap.style.backgroundColor = 'var(--card-bg)';
-                imgWrap.style.padding = '4px';
+            thumbButtons = imageList.map((src, idx) => {
+                const cell = document.createElement('button');
+                cell.type = 'button';
+                cell.className = 'cert-modal-thumb';
 
                 const img = document.createElement('img');
                 img.src = thumbFor(src);
                 // If a thumbnail is missing for any reason, fall back to the
                 // full-size file rather than showing a broken image.
                 img.addEventListener('error', () => { if (img.src !== src) img.src = src; }, { once: true });
-                img.alt = 'certificate image';
+                img.alt = altFor(cert, idx);
                 // Eager, not lazy: the whole thumbnail set is only ~20KB per
                 // image, and having every one cached is what lets the large
                 // view open instantly with a placeholder instead of a blank box.
                 img.loading = 'eager';
                 img.decoding = 'async';
                 img.fetchPriority = 'high';
-                img.style.cursor = 'pointer';
-                img.style.width = '100%';
-                img.style.height = '160px';
-                img.style.objectFit = 'contain';
-                img.addEventListener('click', () => showLargeImage(idx));
-                imgWrap.appendChild(img);
-                grid.appendChild(imgWrap);
+                cell.addEventListener('click', () => showLargeImage(idx));
+                cell.appendChild(img);
+                grid.appendChild(cell);
+                return cell;
             });
             body.appendChild(grid);
+            if (focusIndex !== undefined && thumbButtons[focusIndex]) {
+                thumbButtons[focusIndex].focus({ preventScroll: true });
+            }
         }
 
         function showLargeImage(index) {
-            currentIndex = index;
             body.innerHTML = '';
 
             const controls = document.createElement('div');
-            controls.style.display = 'flex';
-            controls.style.alignItems = 'center';
-            controls.style.gap = '0.5rem';
-            controls.style.marginBottom = '1rem';
+            controls.className = 'cert-modal-controls';
 
             const backBtn = document.createElement('button');
+            backBtn.type = 'button';
             backBtn.className = 'cert-modal-back';
             backBtn.textContent = 'Back';
-            backBtn.addEventListener('click', () => renderGrid());
+            backBtn.addEventListener('click', () => renderGrid(currentIndex));
             controls.appendChild(backBtn);
             body.appendChild(controls);
 
             const row = document.createElement('div');
-            row.style.display = 'flex';
-            row.style.alignItems = 'center';
-            row.style.justifyContent = 'center';
-            row.style.gap = '1rem';
-            row.style.width = '100%';
+            row.className = 'cert-modal-viewer';
 
             const sidePrev = document.createElement('button');
+            sidePrev.type = 'button';
             sidePrev.className = 'cert-modal-side';
             sidePrev.textContent = '❮';
             sidePrev.setAttribute('aria-label', 'Previous');
-            sidePrev.style.flexShrink = '0';
-            sidePrev.style.position = 'static';
-            sidePrev.style.transform = 'none';
-            sidePrev.style.visibility = (currentIndex > 0) ? 'visible' : 'hidden';
             sidePrev.addEventListener('click', () => {
-                if (currentIndex > 0) showLargeImage(currentIndex - 1);
+                if (currentIndex > 0) setLargeImage(currentIndex - 1);
             });
 
             const imgContainer = document.createElement('div');
-            imgContainer.style.flex = '1';
-            imgContainer.style.display = 'flex';
-            imgContainer.style.justifyContent = 'center';
-            imgContainer.style.overflow = 'hidden';
+            imgContainer.className = 'cert-modal-frame';
 
-            // The full-size scans are ~320KB each. Creating a bare <img> and
-            // pointing it straight at one left the modal blank for the whole
-            // round trip, on every click and every arrow press. Start from the
-            // thumbnail that is already in cache, then swap once the full-size
-            // file has decoded, so there is never an empty frame.
-            const fullSrc = imageList[currentIndex];
             const img = document.createElement('img');
-            img.src = thumbFor(fullSrc);
-            img.alt = 'certificate image large';
+            img.className = 'cert-modal-large';
             img.decoding = 'async';
-            img.style.maxHeight = '70vh';
-            img.style.width = 'auto';
-            img.style.maxWidth = '100%';
-            img.style.objectFit = 'contain';
-            img.style.borderRadius = '8px';
-            img.style.filter = 'blur(8px)';
-            img.style.transition = 'filter 0.3s ease';
             imgContainer.appendChild(img);
 
-            const fullImg = new Image();
-            fullImg.onload = () => {
-                // Ignore a late arrival if the user has already navigated away.
-                if (currentIndex !== index) return;
-                img.src = fullSrc;
-                img.style.filter = '';
-            };
-            // If the full-size file fails, keep the thumbnail rather than a gap.
-            fullImg.onerror = () => { if (currentIndex === index) img.style.filter = ''; };
-            fullImg.src = fullSrc;
-
-            // Warm the neighbours so the arrows resolve instantly.
-            [currentIndex - 1, currentIndex + 1].forEach(i => {
-                if (i >= 0 && i < imageList.length) prefetch(imageList[i]);
-            });
-
             const sideNext = document.createElement('button');
+            sideNext.type = 'button';
             sideNext.className = 'cert-modal-side';
             sideNext.textContent = '❯';
             sideNext.setAttribute('aria-label', 'Next');
-            sideNext.style.flexShrink = '0';
-            sideNext.style.position = 'static';
-            sideNext.style.transform = 'none';
-            sideNext.style.visibility = (currentIndex < imageList.length - 1) ? 'visible' : 'hidden';
             sideNext.addEventListener('click', () => {
-                if (currentIndex < imageList.length - 1) showLargeImage(currentIndex + 1);
+                if (currentIndex < imageList.length - 1) setLargeImage(currentIndex + 1);
             });
 
             row.appendChild(sidePrev);
@@ -482,22 +513,68 @@ function renderCards() {
             row.appendChild(sideNext);
             body.appendChild(row);
 
+            // Swaps the picture in place, so the controls (and keyboard focus
+            // on them) survive moving between images.
+            function setLargeImage(i) {
+                currentIndex = i;
+
+                // The full-size scans are ~320KB each. Start from the thumbnail
+                // that is already in cache, then swap once the full-size file
+                // has decoded, so there is never an empty frame.
+                const fullSrc = imageList[i];
+                img.src = thumbFor(fullSrc);
+                img.alt = altFor(cert, i);
+                img.classList.add('is-loading');
+
+                const fullImg = new Image();
+                fullImg.onload = () => {
+                    // Ignore a late arrival if the user has already navigated away.
+                    if (currentIndex !== i) return;
+                    img.src = fullSrc;
+                    img.classList.remove('is-loading');
+                };
+                // If the full-size file fails, keep the thumbnail rather than a gap.
+                fullImg.onerror = () => { if (currentIndex === i) img.classList.remove('is-loading'); };
+                fullImg.src = fullSrc;
+
+                // Warm the neighbours so the arrows resolve instantly.
+                [i - 1, i + 1].forEach(n => {
+                    if (n >= 0 && n < imageList.length) prefetch(imageList[n]);
+                });
+
+                sidePrev.style.visibility = (i > 0) ? 'visible' : 'hidden';
+                sideNext.style.visibility = (i < imageList.length - 1) ? 'visible' : 'hidden';
+                // Don't strand focus on an arrow that just disappeared.
+                const active = document.activeElement;
+                if ((active === sidePrev || active === sideNext) && active.style.visibility === 'hidden') {
+                    const other = active === sidePrev ? sideNext : sidePrev;
+                    (other.style.visibility === 'visible' ? other : backBtn).focus();
+                }
+            }
+
+            setLargeImage(index);
+            backBtn.focus({ preventScroll: true });
+            backToGrid = () => renderGrid(currentIndex);
+
             // Register a fresh single handler — clear old one first
             clearKeyHandler();
             modalKeyHandler = function(e) {
                 if (e.key === 'ArrowLeft' && currentIndex > 0) {
-                    showLargeImage(currentIndex - 1);
+                    setLargeImage(currentIndex - 1);
                 } else if (e.key === 'ArrowRight' && currentIndex < imageList.length - 1) {
-                    showLargeImage(currentIndex + 1);
-                } else if (e.key === 'Escape') {
-                    renderGrid();
+                    setLargeImage(currentIndex + 1);
                 }
             };
             document.addEventListener('keydown', modalKeyHandler);
         }
 
         renderGrid();
-        modalOverlay.classList.remove('hidden');
+        document.body.classList.add('modal-open');
+        if (supportsDialog) {
+            if (!modal.open) modal.showModal();
+        } else {
+            modal.setAttribute('open', '');
+        }
     };
 })();
 
@@ -541,6 +618,7 @@ window.setView = function(mode) {
 
     document.body.className = document.body.className.replace(/mode-(3d|grid)/g, '') + ` mode-${mode}`;
     updateUI();
+    syncCardFocus();
 }
 
 function handleCardClick(index) {
@@ -566,7 +644,8 @@ function updateSelectedState() {
     }
 
     cards.forEach((card, idx) => {
-        card.setAttribute('aria-pressed', String(idx === selectedIndex));
+        const selectBtn = card.querySelector('.cert-select');
+        if (selectBtn) selectBtn.setAttribute('aria-pressed', String(idx === selectedIndex));
         if (idx === selectedIndex) {
             card.classList.add('is-selected');
             card.classList.remove('is-hovered', 'shift-left', 'shift-right');
@@ -586,33 +665,7 @@ function updateSelectedState() {
         });
         void document.body.offsetHeight;
     }
-}
-
-let _lastWheelAt = 0;
-const _wheelDebounce = 140;
-
-function navigate(direction) {
-    if (currentView !== '3d') return;
-    const len = certificates.length;
-    let idx = selectedIndex;
-    if (idx === -1) {
-        idx = (direction > 0) ? 0 : len - 1;
-    } else {
-        idx = Math.max(0, Math.min(len - 1, idx + direction));
-    }
-    selectedIndex = idx;
-    updateSelectedState();
-    const card = document.querySelector(`.card-wrapper[data-index="${selectedIndex}"]`);
-    if (card) card.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-}
-
-function onSceneWheel(e) {
-    if (currentView !== '3d') return;
-    const now = Date.now();
-    if (now - _lastWheelAt < _wheelDebounce) return;
-    _lastWheelAt = now;
-    if (e.deltaY > 5) { e.preventDefault(); navigate(1); }
-    else if (e.deltaY < -5) { e.preventDefault(); navigate(-1); }
+    syncCardFocus();
 }
 
 if (scene) {
@@ -673,10 +726,12 @@ function initAboutAnimation() {
         if (el) el.classList.add('about-anim');
     });
 
-    // Replace name content with typewriter structure
+    // Replace name content with typewriter structure. The heading keeps its
+    // full name for screen readers, which would otherwise catch it half-typed.
     if (nameEl) {
         nameEl.classList.add('about-anim');
-        nameEl.innerHTML = '<span id="about-typed"></span><span class="about-cursor"></span>';
+        nameEl.setAttribute('aria-label', 'Rohit Balaji');
+        nameEl.innerHTML = '<span id="about-typed" aria-hidden="true"></span><span class="about-cursor" aria-hidden="true"></span>';
     }
 
     const typedEl  = document.getElementById('about-typed');
