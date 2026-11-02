@@ -69,13 +69,14 @@
             <ul class="about-awards">
                 <li><span class="aw-mark">1st</span> GDGCxDEVS Hackathon <span class="aw-sub">2025</span></li>
                 <li><span class="aw-mark">Winner</span> Innovate AI &middot; BNZ &times; AWS <span class="aw-sub">2026</span></li>
+                <li><span class="aw-mark">Winner</span> ZEIL AI Hackathon <span class="aw-sub">2026</span></li>
             </ul>
             <img src="images/profilephoto.jpg" draggable="false" alt="A photo of Rohit Balaji" class="profile-photo" width="375" height="416" fetchpriority="high" decoding="async">
             <p>
                 I'm a third-year Software Engineering student at the University of Auckland with a passion for building full-stack and AI-powered applications that solve real problems. Growing up as a gamer sparked my curiosity for how software creates impactful experiences, and pushed me from playing to building.
             </p>
             <p>
-                I care about building experiences that actually work well for the people using them, and I'm always exploring what's next — whether that's local or agentic AI workflows, new and improved frameworks, or a sharper approach to a familiar problem. That drive recently paid off with both a <strong>1st Place and Emerging Talent award at the GDGCxDEVS Hackathon</strong>, judged by engineers from Visa, Pushpay, Atlassian, and Serato — and a <strong>Challenge 3 win at the Innovate AI Hackathon</strong>, run with BNZ and AWS.
+                I care about building software that works well for the people using it, and I'm always exploring what's next, from local and agentic AI workflows to a sharper approach to a familiar problem. Most recently, I was one of five winners at <strong>ZEIL's AI Hackathon</strong>, which earned me a paid AI internship at ZEIL. Before that, I won <strong>1st Place and the Emerging Talent award at the GDGCxDEVS Hackathon</strong>, judged by engineers from Visa, Pushpay, Atlassian and Serato, and <strong>Challenge 3 at the Innovate AI Hackathon</strong>, run with BNZ and AWS.
             </p>
             <div style="text-align: center; margin-top: 2.5rem;">
                 <a href="Rohit_Balaji_CV.pdf" download="Rohit_Balaji_CV.pdf" class="cv-download-btn" data-tooltip="Downloads Rohit_Balaji_CV.pdf">
@@ -158,7 +159,7 @@
             <div class="skills-container">
                 <div class="skill-card">
                     <h3>AI & LLM Integration</h3>
-                    <p>Experience integrating LLM's (OpenAI, Gemma) into applications using RAG (Retrieval-Augmented Generation), LangChain, Proxies, and Vector Databases.</p>
+                    <p>Building LLM features with schema-validated outputs, tool-using agents, RAG and evals, on Claude, Gemini, OpenAI and local models (Ollama) via OpenRouter, the Vercel AI SDK and LangChain.</p>
                 </div>
                 <div class="skill-card">
                     <h3>Data Structures & Algorithms</h3>
@@ -224,21 +225,68 @@
                     </div>
                 </div>
                 <div class="project-card">
+                    <img src="images/witness.jpg" alt="A Witness report showing a Confirmed bug with its evidence and steps to reproduce" class="project-image" width="1200" height="660" loading="lazy" decoding="async">
+                    <div class="project-info">
+                        <h3>Witness - AI Pre-Release Tester for Web Apps</h3>
+                        <p>
+                            Give Witness a running web app's URL and an AI agent drives a real browser through its core journeys, reporting each bug with evidence, steps to reproduce and a Playwright test that fails until the bug is fixed. Its rule is "AI proposes, code proves": every finding is replayed in a fresh browser, and code, not the AI, decides how confident to be. On a benchmark app with 23 seeded bugs, 14&ndash;21% of the AI's raw claims were false; none survived verification, and clean runs raised zero false alarms.
+                        </p>
+                        <div class="project-tech-list">
+                            <span>TypeScript</span>
+                            <span>Playwright</span>
+                            <span>Express</span>
+                            <span>React 19</span>
+                            <span>Claude</span>
+                            <span>Zod</span>
+                            <span>Vercel AI SDK</span>
+                            <span>OpenRouter</span>
+                        </div>
+                        <div class="project-links">
+                            <a href="https://www.youtube.com/watch?v=WtN6w7USRxQ" target="_blank" rel="noopener" class="project-button" data-tooltip="youtube.com/watch?v=WtN6w7USRxQ">Demo Video</a>
+                            <a href="https://github.com/RohitB2005/witness" target="_blank" rel="noopener" class="project-button" data-tooltip="github.com/RohitB2005/witness">View Code</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="project-card">
+                    <img src="images/closure.jpg" alt="A screenshot of Closure after a role is closed, with feedback ready for 8 applicants and 4 held for unlawful reasons" class="project-image" width="1200" height="659" loading="lazy" decoding="async">
+                    <div class="project-info">
+                        <h3>Closure - AI Feedback for Rejected Applicants</h3>
+                        <p>
+                            <b>One of five winners at ZEIL's AI Hackathon 2026</b>, built solo in a day; it earned me a paid AI internship at ZEIL. Closure drafts honest feedback and a next step for every applicant a recruiter rejects. A writer model drafts, code verifies every CV quote, and a critic model checks the message and the recruiter's note against the NZ Human Rights Act, holding discriminatory reasons instead of rewording them. The critic passes 27/27 hand-labelled cases.
+                        </p>
+                        <div class="project-tech-list">
+                            <span>Next.js</span>
+                            <span>React 19</span>
+                            <span>TypeScript</span>
+                            <span>Tailwind</span>
+                            <span>Zod</span>
+                            <span>Gemini</span>
+                            <span>OpenRouter</span>
+                            <span>Vercel</span>
+                        </div>
+                        <div class="project-links">
+                            <a href="https://closure-mu.vercel.app" target="_blank" rel="noopener" class="project-button" data-tooltip="closure-mu.vercel.app">Live App</a>
+                            <a href="https://www.youtube.com/watch?v=C7jo7JYMlrM" target="_blank" rel="noopener" class="project-button" data-tooltip="youtube.com/watch?v=C7jo7JYMlrM">Demo Video</a>
+                            <a href="https://github.com/RohitB2005/closure" target="_blank" rel="noopener" class="project-button" data-tooltip="github.com/RohitB2005/closure">View Code</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="project-card">
                     <img src="images/rippleguard.jpg" alt="A screenshot of the RippleGuard workspace" class="project-image" width="1200" height="864" loading="lazy" decoding="async">
                     <div class="project-info">
                         <h3>RippleGuard - Credit-Risk Stress Simulator</h3>
                         <p>
-                            <b>Winner of Challenge 3</b> at the Innovate AI Hackathon 2026, run with BNZ and AWS. It models a bank's lending book as a graph, not a table, so a sector shock reaches suppliers and guarantors never hit directly &mdash; before anyone misses a payment. Scoring is deterministic with no LLM in the loop, so every number is reproducible and every flag cites its policy clause. Overrides need a written justification that Amazon Comprehend checks is substantive. Team of three on synthetic data; I owned the AWS backend, deploy tooling and two frontend screens.
+                            <b>Winner of Challenge 3</b> at the Innovate AI Hackathon 2026, run with BNZ and AWS. It models a bank's lending book as a graph, so a sector shock reaches suppliers and guarantors it never hit directly, before anyone misses a payment. Scoring is deterministic, with no LLM in the loop, and every flag cites its policy clause; Amazon Comprehend checks that override justifications are substantive. Team of three on synthetic data; I owned the AWS backend, deploy tooling and two frontend screens.
                         </p>
                         <div class="project-tech-list">
                             <span>Python</span>
-                            <span>AWS Lambda</span>
-                            <span>DynamoDB</span>
-                            <span>API Gateway</span>
-                            <span>S3</span>
-                            <span>IAM</span>
-                            <span>Comprehend</span>
                             <span>NetworkX</span>
+                            <span>DynamoDB</span>
+                            <span>S3</span>
+                            <span>AWS Lambda</span>
+                            <span>IAM</span>
+                            <span>API Gateway</span>
+                            <span>Comprehend</span>
                             <span>React</span>
                             <span>TypeScript</span>
                         </div>
@@ -256,12 +304,12 @@
                         </p>
                         <div class="project-tech-list">
                             <span>Electron</span>
-                            <span>HTML/CSS/JS</span>
                             <span>Python</span>
+                            <span>HTML/CSS/JS</span>
                             <span>Flask</span>
-                            <span>Langchain</span>
                             <span>FAISS</span>
                             <span>Ollama</span>
+                            <span>Langchain</span>
                             <span>Gemma</span>
                         </div>
                         <div class="project-links">
@@ -271,40 +319,20 @@
                     </div>
                 </div>
                 <div class="project-card">
-                    <img src="images/trialai.jpg" alt="A screenshot of the TrialAI game" width="1200" height="805" loading="lazy" decoding="async" class="project-image">
-                    <div class="project-info">
-                        <h3>TrialAI - Interactive AI Ethics Simulation</h3>
-                        <p>
-                            A futuristic courtroom simulation game built in JavaFX where players act as adjudicators to determine the accountability of an AI defendant. Players investigate a case by delving into character memories, interacting with unique game elements, and engaging in context-aware conversations with LLM-powered characters to uncover the truth behind a biased decision.
-                        </p>
-                        <div class="project-tech-list">
-                            <span>Java</span>
-                            <span>JavaFX</span>
-                            <span>CSS</span>
-                            <span>OpenAI API</span>
-                            <span>Maven</span>
-                            <span>Collaborative Git</span>
-                        </div>
-                        <div class="project-links">
-                            <a href="https://github.com/RohitB2005/TrialAI-Game.git" target="_blank" class="project-button" data-tooltip="github.com/RohitB2005/TrialAI-Game">View Code</a>
-                            <a href="https://youtu.be/xF5pg3dE9Zw" target="_blank" class="project-button" data-tooltip="youtu.be/xF5pg3dE9Zw">Demo Video</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="project-card">
                     <img src="images/gitme.jpg" alt="A screenshot of the gitme-ai CLI tool" width="1200" height="735" loading="lazy" decoding="async" class="project-image">
                     <div class="project-info">
                         <h3>gitme-ai - AI Git Commit Generator</h3>
                         <p>
-                            A command-line interface (CLI) tool published on PyPI that automatically generates Conventional Commit messages from staged git diffs. Built with Python, it supports local privacy-first models via Ollama, as well as cloud models like OpenAI and OpenRouter. It features cross-platform configuration management and a rich terminal UI.
+                            A command-line tool, published on PyPI, that reads your staged git diff and writes a Conventional Commits message for it. It's local-first: by default it runs Gemma on your own machine through Ollama, so your diffs never leave it, and you can switch to OpenAI or OpenRouter in its config. You can add context the diff can't show, such as "a hotfix for the login bug", and copy the message straight to your clipboard.
                         </p>
                         <div class="project-tech-list">
                             <span>Python</span>
-                            <span>CLI</span>
+                            <span>Click</span>
                             <span>Git</span>
                             <span>PyPI</span>
                             <span>Ollama</span>
-                            <span>LLMs</span>
+                            <span>OpenAI</span>
+                            <span>OpenRouter</span>
                         </div>
                         <div class="project-links">
                             <a href="https://pypi.org/project/gitme-ai/" target="_blank" class="project-button" data-tooltip="pypi.org/project/gitme-ai">View PyPI</a>
@@ -318,11 +346,11 @@
             <p class="projects-subhead">Also built</p>
             <div class="projects-compact">
                 <div class="project-card-compact">
-                    <h3>Mind Game - AI Colour Guesser</h3>
-                    <p>A JavaFX desktop game where you test your wits against a learning AI. Started as a university assignment; I built a full GUI alongside the original command-line version and added a 'Nightmare' difficulty.</p>
+                    <h3>TrialAI - Interactive AI Ethics Simulation</h3>
+                    <p>A JavaFX courtroom game where players judge whether an AI defendant is accountable for a biased decision, by exploring character memories and questioning LLM-powered characters through the OpenAI API.</p>
                     <div class="project-links">
-                            <a href="https://github.com/RohitB2005/new_colour_guesser_game.git" target="_blank" rel="noopener" class="project-button" data-tooltip="github.com/RohitB2005/new_colour_guesser_game">View Code</a>
-                            <a href="https://www.youtube.com/playlist?list=PLelgOPoc7x4lPesu4HgD88l8LjLjydkzy" target="_blank" rel="noopener" class="project-button" data-tooltip="youtube.com · Mind Game playlist">Videos</a>
+                            <a href="https://github.com/RohitB2005/TrialAI-Game.git" target="_blank" rel="noopener" class="project-button" data-tooltip="github.com/RohitB2005/TrialAI-Game">View Code</a>
+                            <a href="https://youtu.be/xF5pg3dE9Zw" target="_blank" rel="noopener" class="project-button" data-tooltip="youtu.be/xF5pg3dE9Zw">Demo Video</a>
                     </div>
                 </div>
                 <div class="project-card-compact">
