@@ -114,11 +114,7 @@
             syncThemeButton();
             const themeColor = document.querySelector('meta[name="theme-color"]');
             if (themeColor) themeColor.content = isLight ? '#669ec3' : '#0e131a';
-
-            themeToggle.classList.add('rotate-icon');
-            setTimeout(function () {
-                themeToggle.classList.remove('rotate-icon');
-            }, 500);
+            // The icon's moon/sun spin-through is pure CSS, driven by the class above.
         });
     }
 })();

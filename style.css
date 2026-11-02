@@ -1431,12 +1431,38 @@ body.light-mode .project-tech-list span {
     appearance: none;
 }
 
-/* Icon is driven by the theme class rather than by swapping markup in JS,
-   so it cannot flash the wrong glyph before scripts run. */
-#theme-toggle .icon { display: block; }
-#theme-toggle .icon-sun,
-body.light-mode #theme-toggle .icon-moon { display: none; }
-body.light-mode #theme-toggle .icon-sun { display: block; }
+/* THEME TOGGLE: a spin-through between the moon and the sun.
+   Switching to light, the moon makes a half turn as it shrinks to a point and
+   the sun spins out of that same point; just before the moon is gone, so the
+   icon is never empty. Switching to dark runs it backwards. ~0.5s each way.
+   Driven entirely by the theme class: no glyph flash before scripts run, and
+   rapid clicks reverse smoothly from wherever the icon is. Each state's
+   transition list is the one used when arriving in that state.
+   Lengths are in the SVG's 512-unit space. The width eases between the moon's
+   18px and the sun's 24px, as the two glyphs had before, so the toggle keeps
+   its place next to the logo. */
+#theme-toggle .tt-icon {
+    display: block;
+    width: .75em;
+    transition: width .22s ease .05s;
+}
+#theme-toggle .tt-moon { transform-box: view-box; transform-origin: 223.5px 256px; }
+#theme-toggle .tt-sun { transform-box: view-box; transform-origin: 256px 256px; }
+#theme-toggle .tt-moon { transition: transform .34s cubic-bezier(.3, .7, .4, 1.1) .18s; }
+#theme-toggle .tt-sun {
+    transform: rotate(-180deg) scale(0);
+    transition: transform .28s cubic-bezier(.42, 0, 1, 1);
+}
+
+body.light-mode #theme-toggle .tt-icon { width: 1em; transition: width .22s ease .24s; }
+body.light-mode #theme-toggle .tt-moon {
+    transform: rotate(180deg) scale(0);
+    transition: transform .28s cubic-bezier(.42, 0, 1, 1);
+}
+body.light-mode #theme-toggle .tt-sun {
+    transform: none;
+    transition: transform .34s cubic-bezier(.3, .7, .4, 1.15) .18s;
+}
 
 #theme-toggle::after {
     bottom: auto;
@@ -1452,10 +1478,6 @@ body.light-mode #theme-toggle .icon-sun { display: block; }
 
 body.light-mode #theme-toggle:hover {
     background-color: rgba(0,0,0,0.1);
-}
-
-.rotate-icon {
-    transform: rotate(360deg);
 }
 
 .about-greeting {
@@ -1967,6 +1989,13 @@ body.light-mode #stars3 { animation-duration: 25s; }
     .card-wrapper,
     .card-inner {
         transition: none !important;
+    }
+
+    /* The theme toggle's spin-through is sequenced with a delay; drop it too
+       so it's an instant swap between the moon and the sun. */
+    #theme-toggle,
+    #theme-toggle * {
+        transition-delay: 0s !important;
     }
 }
 
