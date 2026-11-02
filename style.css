@@ -488,6 +488,9 @@ body.light-mode .tech-stack-container.is-3d .tech-card {
     grid-template-columns: repeat(4, 1fr);
     gap: 1.5rem;
     margin-top: 3rem;
+    /* Same span as the projects row, wider than main's 900px column. */
+    width: min(1256px, calc(100vw - 4rem));
+    margin-inline: calc((100% - min(1256px, 100vw - 4rem)) / 2);
 }
 
 /* 4-across matches the previous flex layout exactly at desktop.
@@ -1252,6 +1255,17 @@ body.modal-open { overflow: hidden; }
     flex-grow: 1;
 }
 
+/* Year and team size under the title */
+.project-info .project-meta {
+    margin: -0.6rem 0 1rem;
+    font-size: 1.3rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    line-height: 1.4;
+    opacity: 0.7;
+    flex-grow: 0;
+}
+
 /* Inline pills with balanced wrapping, so a list never ends on a lone pill
    (9 tags used to wrap 4/4/1; now 3/3/3). font-size: 0 removes the whitespace
    between the inline-blocks, and the pills' margins do the spacing. Browsers
@@ -1346,6 +1360,22 @@ body.light-mode .project-tech-list span {
     justify-content: center;
     gap: 2rem;
 }
+
+/* The email tooltip never shows on touch screens, so the address is also
+   written out. */
+#contact .contact-email {
+    margin: 2rem auto 0;
+    font-size: 1.6rem;
+}
+
+.contact-email a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    border-bottom: 1px solid currentColor;
+    padding-bottom: 1px;
+}
+
+.contact-email a:hover { color: var(--accent-color); }
 
 .social-link {
     display: flex;

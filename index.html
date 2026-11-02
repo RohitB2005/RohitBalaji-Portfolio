@@ -168,12 +168,12 @@
                         <p>Flask</p>
                     </div>
                     <div class="tech-card">
-                        <img src="images/Vitelogo.png" alt="" class="tech-logo" width="140" height="140" loading="lazy" decoding="async">
-                        <p>Vite</p>
+                        <img src="images/langchainlogo.png" alt="" class="tech-logo" width="140" height="140" loading="lazy" decoding="async">
+                        <p>LangChain</p>
                     </div>
                     <div class="tech-card">
-                        <img src="images/javafxlogo.png" alt="" class="tech-logo" width="140" height="140" loading="lazy" decoding="async">
-                        <p>JavaFX</p>
+                        <img src="images/playwrightlogo.png" alt="" class="tech-logo" width="140" height="140" loading="lazy" decoding="async">
+                        <p>Playwright</p>
                     </div>
                     <div class="tech-card">
                         <img src="images/electron-logo.png" alt="" class="tech-logo" width="140" height="140" loading="lazy" decoding="async">
@@ -239,6 +239,7 @@
                     <img src="images/friction.jpg" alt="A screenshot of a Friction lesson slide with an interactive simulation" class="project-image" width="1200" height="656" loading="lazy" decoding="async">
                     <div class="project-info">
                         <h3>Friction — AI Study Tool from Your Notes</h3>
+                        <p class="project-meta">2026 · Team of 2</p>
                         <p>
                             Friction turns your own lecture notes into interactive lessons. Paste notes or upload a PDF and it builds a slideshow, quiz, flashcards and fill-in-the-blank exercises from the actual content &mdash; not generic explanations &mdash; with some slides carrying an interactive simulation seeded from your own numbers. PDFs are parsed in the browser, falling back to OCR for scans and photos. Named for "desirable difficulty" in learning science: material you work at is material you retain. A signed-out demo runs a full lesson, no account needed.
                         </p>
@@ -262,6 +263,7 @@
                     <img src="images/witness.jpg" alt="A Witness report showing a Confirmed bug with its evidence and steps to reproduce" class="project-image" width="1200" height="660" loading="lazy" decoding="async">
                     <div class="project-info">
                         <h3>Witness — AI Pre-Release Tester for Web Apps</h3>
+                        <p class="project-meta">2026 · Solo</p>
                         <p>
                             Give Witness a running web app's URL and an AI agent drives a real browser through its core journeys, reporting each bug with evidence, steps to reproduce and a Playwright test that fails until the bug is fixed. Its rule is "AI proposes, code proves": every finding is replayed in a fresh browser, and code, not the AI, decides how confident to be. On a benchmark app with 23 seeded bugs, 14&ndash;21% of the AI's raw claims were false; none survived verification, and clean runs raised zero false alarms.
                         </p>
@@ -285,6 +287,7 @@
                     <img src="images/closure.jpg" alt="A screenshot of Closure after a role is closed, with feedback ready for 8 applicants and 4 held for unlawful reasons" class="project-image" width="1200" height="659" loading="lazy" decoding="async">
                     <div class="project-info">
                         <h3>Closure — AI Feedback for Rejected Applicants</h3>
+                        <p class="project-meta">2026 · Solo</p>
                         <p>
                             <b>One of five winners at ZEIL's AI Hackathon 2026</b>, built solo in a day; it earned me a paid AI internship at ZEIL. Closure drafts honest feedback and a next step for every applicant a recruiter rejects. A writer model drafts, code verifies every CV quote, and a critic model checks the message and the recruiter's note against the NZ Human Rights Act, holding discriminatory reasons instead of rewording them. The critic passes 27/27 hand-labelled cases.
                         </p>
@@ -309,6 +312,7 @@
                     <img src="images/rippleguard.jpg" alt="A screenshot of the RippleGuard workspace" class="project-image" width="1200" height="864" loading="lazy" decoding="async">
                     <div class="project-info">
                         <h3>RippleGuard — Credit-Risk Stress Simulator</h3>
+                        <p class="project-meta">2026 · Team of 3</p>
                         <p>
                             <b>Winner of Challenge 3</b> at the Innovate AI Hackathon 2026, run with BNZ and AWS. It models a bank's lending book as a graph, so a sector shock reaches suppliers and guarantors it never hit directly, before anyone misses a payment. Scoring is deterministic, with no LLM in the loop, and every flag cites its policy clause; Amazon Comprehend checks that override justifications are substantive. Team of three on synthetic data; I owned the AWS backend, deploy tooling and two frontend screens.
                         </p>
@@ -333,6 +337,7 @@
                     <img src="images/dazey-preview.jpg" alt="A screenshot of the Dazey AI journaling app" width="1200" height="747" loading="lazy" decoding="async" class="project-image">
                     <div class="project-info">
                         <h3>Dazey — AI Journal & Note Taker</h3>
+                        <p class="project-meta">2025 · Team of 6</p>
                         <p>
                             <b>1st Place and the Emerging Talent award</b> at the GDGCxDEVS Hackathon 2025, built by a team of six second-year students. Dazey is a privacy-first Electron journal and note-taker running on local AI (Gemma 3n E4B through Ollama): it sorts raw notes into smart categories, spots habit patterns, and answers questions about past notes with a RAG chatbot. I built every frontend screen from my teammates' Figma designs, including dark mode, wrote the habit tracker, and helped build the Flask AI backend and its prompts.
                         </p>
@@ -356,6 +361,7 @@
                     <img src="images/gitme.jpg" alt="A screenshot of the gitme-ai CLI tool" width="1200" height="735" loading="lazy" decoding="async" class="project-image">
                     <div class="project-info">
                         <h3>gitme-ai — AI Git Commit Generator</h3>
+                        <p class="project-meta">2026 · Solo</p>
                         <p>
                             A command-line tool, published on PyPI, that reads your staged git diff and writes a Conventional Commits message for it. It's local-first: by default it runs Gemma on your own machine through Ollama, so your diffs never leave it, and you can switch to OpenAI or OpenRouter in its config. You can add context the diff can't show, such as "a hotfix for the login bug", and copy the message straight to your clipboard.
                         </p>
@@ -416,6 +422,7 @@
                     <svg class="icon" viewBox="0 0 496 512" aria-hidden="true"><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
                 </a>
             </div>
+            <p class="contact-email"><a href="mailto:rohitvb26@gmail.com">rohitvb26@gmail.com</a></p>
         </section>
     </main>
     <script src="script.js"></script>
