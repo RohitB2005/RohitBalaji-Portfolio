@@ -1,4 +1,34 @@
-@import url('https://fonts.googleapis.com/css?family=Quicksand:400,500,700');
+/* Self-hosted fonts (SIL OFL, licences in fonts/). Quicksand is one variable
+   file declared at the three weights the page was designed with, so a
+   font-weight of 600 still resolves to the 700 face exactly as before. */
+@font-face {
+    font-family: 'Quicksand';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url('fonts/quicksand-latin.woff2') format('woff2');
+}
+@font-face {
+    font-family: 'Quicksand';
+    font-style: normal;
+    font-weight: 500;
+    font-display: swap;
+    src: url('fonts/quicksand-latin.woff2') format('woff2');
+}
+@font-face {
+    font-family: 'Quicksand';
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url('fonts/quicksand-latin.woff2') format('woff2');
+}
+@font-face {
+    font-family: 'Orbitron';
+    font-style: normal;
+    font-weight: 500;
+    font-display: swap;
+    src: url('fonts/orbitron-500-latin.woff2') format('woff2');
+}
 
 /* --- CSS Variables & Themes --- */
 :root {
@@ -9,6 +39,8 @@
     --card-bg: #1c2a3a;
     --card-border: #3c4a5a;
     --accent-color: #00E676;
+    --accent-fill: #00E676;     /* filled buttons and other solid accent surfaces */
+    --on-accent: #000;          /* text and icons on an accent-coloured surface */
     --nav-bg-scrolled: #111;
     --nav-text: #fff;
     --icon-color: #fff;
@@ -43,6 +75,9 @@ body.light-mode {
     --card-bg: rgba(255, 255, 255, 0.75); 
     --card-border: #FFF;
     --accent-color: #007bff; 
+    /* a shade darker than the accent so white button text passes contrast */
+    --accent-fill: #0069d9;
+    --on-accent: #fff;
     --nav-bg-scrolled: rgba(255, 255, 255, 0.95);
     --nav-text: #1c2a3a;
     --icon-color: #1c2a3a;
@@ -54,9 +89,26 @@ body {
     padding: 0;
     box-sizing: border-box;
     font-family: "Quicksand", sans-serif;
-    font-size: 62.5%;
-    font-size: 10px;
     overscroll-behavior: none;
+}
+
+/* Buttons don't inherit the page font by default and fell back to Arial. */
+button { font: inherit; }
+
+/* 1rem = 10px at the default browser setting, but still scales for visitors
+   who have set a larger default font size. */
+html { font-size: 62.5%; }
+body { font-size: 1rem; }
+
+/* Inline SVG icons (Font Awesome Free paths): sized and coloured like the
+   icon font they replaced. */
+.icon {
+    display: inline-block;
+    height: 1em;
+    width: auto;
+    overflow: visible;
+    vertical-align: -0.125em;
+    fill: currentColor;
 }
 
 body {
@@ -71,6 +123,23 @@ html {
     scroll-behavior: smooth;
     scroll-padding-top: 100px; 
 }
+
+/* Off-screen until a keyboard user tabs to it. */
+.skip-link {
+    position: absolute;
+    left: 1rem;
+    top: -10rem;
+    z-index: 1000;
+    background-color: var(--accent-fill);
+    color: var(--on-accent);
+    padding: 1rem 1.6rem;
+    border-radius: 8px;
+    font-size: 1.6rem;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.skip-link:focus { top: 1rem; }
 
 main {
     position: relative; 
@@ -122,8 +191,8 @@ main p {
     display: inline-flex;
     align-items: center;
     gap: 1rem;
-    background-color: var(--accent-color);
-    color: #000;
+    background-color: var(--accent-fill);
+    color: var(--on-accent);
     padding: 1.2rem 3rem;
     border-radius: 8px;
     text-decoration: none;
@@ -135,10 +204,6 @@ main p {
 .cv-download-btn:hover {
     opacity: 0.85;
     transform: translateY(-2px);
-}
-
-body.light-mode .cv-download-btn {
-    color: #fff;
 }
 
 .tech-stack-container {
@@ -176,6 +241,46 @@ body.light-mode .cv-download-btn {
     font-size: 1.6rem;
     font-weight: 500;
     color: var(--text-primary);
+}
+
+/* Flat layout (no 3D ring): the cards live inside .tech-ring, so the ring
+   itself has to be the wrapping row. Sized so 15 cards make even rows: five
+   across on desktop and tablets, three across on phones. */
+.tech-stack-container:not(.is-3d) .tech-ring {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1.6rem;
+    width: 100%;
+    max-width: 714px;   /* five 130px cards and their gaps */
+}
+
+.tech-stack-container:not(.is-3d) .tech-card {
+    width: 130px;
+    padding: 1.4rem 0.8rem;
+    box-sizing: border-box;
+}
+
+.tech-stack-container:not(.is-3d) .tech-logo {
+    width: 58px;
+    height: 58px;
+    margin-bottom: 0.4rem;
+}
+
+.tech-stack-container:not(.is-3d) .tech-card p {
+    font-size: 1.35rem;
+    line-height: 1.2;
+}
+
+@media screen and (max-width: 520px) {
+    .tech-stack-container:not(.is-3d) .tech-ring { gap: 1rem; }
+    .tech-stack-container:not(.is-3d) .tech-card {
+        width: calc((100% - 2rem) / 3);
+        max-width: 120px;
+        padding: 1.2rem 0.4rem;
+    }
+    .tech-stack-container:not(.is-3d) .tech-logo { width: 48px; height: 48px; }
+    .tech-stack-container:not(.is-3d) .tech-card p { font-size: 1.3rem; }
 }
 
 /* ========================================
@@ -268,6 +373,12 @@ body.light-mode .cv-download-btn {
     transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
+/* The light theme's card colour is translucent, which let the mirrored back
+   of the ring show through the front cards. */
+body.light-mode .tech-stack-container.is-3d .tech-card {
+    background-color: #eef5f9;
+}
+
 .tech-stack-container.is-3d .tech-card:hover {
     /* the flat layout's translateY lift would fight the 3D placement */
     transform: rotateY(var(--tc-angle)) translateZ(var(--tc-radius));
@@ -347,7 +458,7 @@ body.light-mode .cv-download-btn {
 }
 
 .project-card-compact:hover {
-    transform: translateY(-6px);
+    transform: translateY(-8px);
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
 }
 
@@ -377,6 +488,9 @@ body.light-mode .cv-download-btn {
     grid-template-columns: repeat(4, 1fr);
     gap: 1.5rem;
     margin-top: 3rem;
+    /* Same span as the projects row, wider than main's 900px column. */
+    width: min(1256px, calc(100vw - 4rem));
+    margin-inline: calc((100% - min(1256px, 100vw - 4rem)) / 2);
 }
 
 /* 4-across matches the previous flex layout exactly at desktop.
@@ -488,12 +602,8 @@ body.light-mode .cert-view-btn:hover {
 }
 
 .cert-view-btn.active {
-    background-color: var(--accent-color);
-    color: #000;
-}
-
-body.light-mode .cert-view-btn.active {
-    color: #FFF;
+    background-color: var(--accent-fill);
+    color: var(--on-accent);
 }
 
 /* Scene Setup */
@@ -529,13 +639,23 @@ body.light-mode .cert-view-btn.active {
     padding: 0 2rem;
 }
 
-/* 5-across only where a 5th column is actually wide enough to hold its content.
-   This used to start at 768px, which squeezed each card to ~148px and clipped
-   the course text and buttons. Below 1200px the auto-fit rule above applies. */
+/* All on one row only where a 5th column is actually wide enough to hold its
+   content. This used to start at 768px, which squeezed each card to ~148px and
+   clipped the course text and buttons. Below 1200px the auto-fit rule above
+   applies. --cert-cols comes from script.js: up to five, chosen so a row never
+   ends on a lone card; fewer columns also narrow the grid so cards keep their
+   proportions. */
 @media (min-width: 1200px) {
     .mode-grid #scene-container {
-        grid-template-columns: repeat(5, minmax(0, 1fr));
+        grid-template-columns: repeat(var(--cert-cols, 5), minmax(0, 1fr));
+        max-width: min(1290px, calc(var(--cert-cols, 5) * 290px + 4rem));
     }
+
+    /* Five across leaves ~220-240px per card, which the two pills overflowed
+       at 1200px and only just cleared at 1470px. */
+    .mode-grid .cert-actions { gap: 0.4rem; }
+    .mode-grid .cert-actions .show-cert-btn,
+    .mode-grid .cert-actions .credential-link { font-size: 1.1rem; }
 }
 
 /* The 3D stack needs a fixed ~500px of width and cannot shrink, so below
@@ -568,6 +688,15 @@ body.light-mode .cert-view-btn.active {
     width: auto;
     min-height: var(--card-height);
     margin-left: 0 !important;
+}
+
+/* Phones get one card per row, where a fixed 400px card was mostly empty
+   space. Let each card be as tall as its content instead. */
+@media screen and (max-width: 700px) {
+    .mode-grid .card-wrapper { min-height: 0; }
+    .mode-grid .face-front { position: relative; }
+    .mode-grid .cert-front { position: static; padding-bottom: 0.75rem; }
+    .mode-grid .cert-actions { position: static; margin-top: 1.6rem; }
 }
 
 /* Card Inner */
@@ -652,7 +781,6 @@ body.light-mode .cert-view-btn.active {
 }
 
 .face-side {
-    top: -1;
     bottom: 0;
     left: 0;
     width: var(--card-thickness);
@@ -669,7 +797,6 @@ body.light-mode .cert-view-btn.active {
 }
 
 .face-top {
-    left: -1;
     right: 0;
     top: 0;
     height: var(--card-thickness);
@@ -680,7 +807,6 @@ body.light-mode .cert-view-btn.active {
 }
 
 .face-bottom {
-    left: -1;
     right: 0;
     bottom: 0;
     height: var(--card-thickness);
@@ -690,32 +816,54 @@ body.light-mode .cert-view-btn.active {
     border-radius: 0 0 16px 16px;
 }
 
-/* Modal Styles */
-.cert-modal-overlay {
-    position: fixed;
-    inset: 0;
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: 9999;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 1rem;
-}
-
-.cert-modal-overlay.hidden {
-    display: none;
-}
-
+/* Certificates modal: a native <dialog>, see script.js */
 .cert-modal {
+    /* reset the browser's own dialog chrome */
+    border: none;
+    padding: 0;
+    margin: auto;
     background-color: var(--card-bg);
     border-radius: 12px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-    width: 100%;
-    max-width: 80rem; /* increased modal width */
-    max-height: 90vh; /* allow fuller height */
+    /* a 1rem gutter each side; 85rem = an 80rem panel plus its padding */
+    width: calc(100% - 2rem);
+    max-width: 85rem;
+    max-height: min(calc(90vh + 5rem), calc(100% - 2rem));
     overflow: auto;
-    padding: 2.5rem;
     color: var(--text-primary); /* modal text adapts to theme */
+}
+
+.cert-modal::backdrop {
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+/* Browsers too old for <dialog> treat it as an unknown element: keep it
+   hidden until opened, then place it by hand (see script.js). */
+.cert-modal:not([open]) { display: none; }
+
+.cert-modal.no-dialog {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    height: fit-content;
+    box-shadow: 0 0 0 100vmax rgba(0, 0, 0, 0.5), 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+body.modal-open { overflow: hidden; }
+
+.cert-modal-inner { padding: 2.5rem; }
+
+.cert-modal-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+.cert-modal-heading {
+    font-size: 1.8rem;
+    font-weight: bold;
 }
 
 .cert-modal-close {
@@ -729,12 +877,61 @@ body.light-mode .cert-view-btn.active {
 }
 
 .cert-modal-close:hover {
-    background-color: var(--accent-color);
-    color: #000;
+    background-color: var(--accent-fill);
+    color: var(--on-accent);
 }
 
 .cert-modal-body {
     margin-top: 1rem;
+}
+
+.cert-modal-title {
+    font-weight: 600;
+    font-size: 1.6rem;
+}
+
+.cert-modal-empty {
+    font-size: 1.4rem;
+    opacity: 0.7;
+}
+
+.cert-modal-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+@media (min-width: 768px) {
+    .cert-modal-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+.cert-modal-thumb {
+    display: block;
+    box-sizing: border-box;
+    width: 100%;
+    margin: 0;
+    padding: 4px;
+    border: 1px solid var(--card-border);
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: var(--card-bg);
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+}
+
+.cert-modal-thumb img {
+    width: 100%;
+    height: 160px;
+    object-fit: contain;
+}
+
+.cert-modal-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
 }
 
 .cert-modal-back {
@@ -748,14 +945,20 @@ body.light-mode .cert-view-btn.active {
 }
 
 .cert-modal-back:hover {
-    background-color: var(--accent-color);
-    color: #000;
+    background-color: var(--accent-fill);
+    color: var(--on-accent);
+}
+
+.cert-modal-viewer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    width: 100%;
 }
 
 .cert-modal-side {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
+    flex-shrink: 0;
     background: rgba(255,255,255,0.9);
     border: 1px solid rgba(0,0,0,0.08);
     padding: 6px 8px;
@@ -763,7 +966,7 @@ body.light-mode .cert-view-btn.active {
     cursor: pointer;
     box-shadow: 0 2px 6px rgba(0,0,0,0.12);
     opacity: 0.9;
-    transition: transform 120ms ease, opacity 120ms ease, background 120ms ease;
+    transition: opacity 120ms ease, background 120ms ease;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -772,10 +975,27 @@ body.light-mode .cert-view-btn.active {
 }
 
 .cert-modal-side:hover {
-    transform: translateY(-50%) scale(1.08);
     opacity: 1;
     background: rgba(255,255,255,1);
 }
+
+.cert-modal-frame {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.cert-modal-large {
+    max-height: 70vh;
+    width: auto;
+    max-width: 100%;
+    object-fit: contain;
+    border-radius: 8px;
+    transition: filter 0.3s ease;
+}
+
+.cert-modal-large.is-loading { filter: blur(8px); }
 
 .shelf-hint {
     display: none;
@@ -794,93 +1014,154 @@ body.light-mode .cert-view-btn.active {
     display: none;
 }
 
-/* Utility classes for certifications */
-.w-full {
+/* Card front, rendered by script.js */
+.cert-section {
     width: 100%;
-}
-
-.flex {
     display: flex;
-}
-
-.flex-col {
     flex-direction: column;
-}
-
-.items-center {
     align-items: center;
-}
-
-.justify-center {
     justify-content: center;
 }
 
-.pb-20 {
-    padding-bottom: 0rem;
+.cert-section h2 { margin-bottom: 2rem; }
+
+/* Covers the face beneath its content and selects the card in the 3D view.
+   Clicks on the content above it reach the same handler on .card-wrapper. */
+.cert-select {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    border: none;
+    border-radius: inherit;
+    background: transparent;
+    cursor: pointer;
+    -webkit-appearance: none;
+    appearance: none;
 }
 
-.font-mono {
+/* Drawn inside the face: the face clips anything outside it, and a white ring
+   with a dark edge shows on every certificate colour. */
+.cert-select:focus-visible {
+    outline: none;
+    border-radius: inherit;
+    box-shadow: inset 0 0 0 2px #fff, inset 0 0 0 4px rgba(0, 0, 0, 0.55);
+}
+
+.mode-grid .cert-select { display: none; }
+
+.cert-front {
+    position: absolute;
+    inset: 0;
+    padding: 1rem;
+    color: #fff;
+    pointer-events: auto;
+}
+
+.cert-head {
+    display: grid;
+    grid-template-columns: 1fr 64px;
+    grid-template-rows: auto auto;
+    gap: 8px;
+    align-items: start;
+}
+
+.cert-meta { grid-column: 1; grid-row: 1; }
+
+.cert-provider {
+    font-size: 1.4rem;
+    font-weight: 600;
+    opacity: 0.9;
+}
+
+.cert-title {
+    font-size: 1.6rem;
+    font-weight: bold;
+    letter-spacing: -0.5px;
+    word-break: break-word;
+    padding-right: 0.5rem;
+    line-height: 1.3;
+}
+
+.cert-id {
+    margin-top: 0.5rem;
+    font-size: 1.2rem;
+    opacity: 0.8;
     font-family: monospace;
 }
 
-/* Minimal Tailwind-like utilities used by the certifications component */
-.absolute { position: absolute; }
-.inset-0 { top: 0; right: 0; bottom: 0; left: 0; }
-.pointer-events-auto { pointer-events: auto; }
-.p-4 { padding: 1rem; }
-.p-1 { padding: 0.25rem; }
-.text-white { color: #fff; }
-.text-xs { font-size: 1.2rem; }
-.text-sm { font-size: 1.4rem; }
-.font-semibold { font-weight: 600; }
-.font-bold { font-weight: 700; }
-.mt-2 { margin-top: 0.5rem; }
-.mb-1 { margin-bottom: 0.25rem; }
-.pr-2 { padding-right: 0.5rem; }
-.break-words { overflow-wrap: break-word; }
-.leading-snug { line-height: 1.2; }
-.w-12 { width: 48px; }
-.h-12 { height: 48px; }
-.rounded-lg { border-radius: 0.5rem; }
-.border { border: 1px solid #e5e7eb; }
-.border-gray-300 { border-color: #e5e7eb; }
-.bg-white { background: #ffffff; }
-.bg-white\/10 { background: rgba(255,255,255,0.1); }
-.hover\:bg-white\/20:hover { background: rgba(255,255,255,0.2); }
-.list-inside { list-style-position: inside; }
-.list-disc { list-style-type: disc; }
-.space-y-1 li + li { margin-top: 0.25rem; }
-.gap-3 { gap: 0.75rem; }
-.bottom-3 { bottom: 0.75rem; }
-.left-0 { left: 0; }
-.right-0 { right: 0; }
-.px-2 { padding-left: 0.5rem; padding-right: 0.5rem; }
-.py-0\.5 { padding-top: 0.125rem; padding-bottom: 0.125rem; }
-.underline { text-decoration: underline; }
-.show-cert-btn, .cert-modal-close, .cert-modal-back { cursor: pointer; }
-.show-cert-btn {
-    color: inherit;
-    font-weight: 600;
-    text-decoration: underline;
-    background: rgba(255,255,255,0.1);
-    padding: 4px 8px;
-    border-radius: 4px;
+.cert-logo-cell {
+    grid-column: 2;
+    grid-row: 1;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
 }
 
-/* Credential link styling: keep same visual as show button and avoid default visited blue */
-.credential-link, .credential-link:visited {
-    color: inherit;
-    background: rgba(255,255,255,0.1);
-    padding: 4px 8px;
-    border-radius: 4px;
+.cert-logo {
+    width: 48px;
+    height: 48px;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+}
+
+.cert-logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.cert-courses {
+    grid-column: 1 / span 2;
+    grid-row: 2;
+    margin-top: 4px;
+    font-size: 1.2rem;
+}
+
+.cert-courses-label {
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.cert-courses ul {
+    list-style-position: inside;
+    list-style-type: disc;
+    margin: 0;
+    padding: 0;
+}
+
+.cert-courses li {
+    opacity: 0.85;
+    margin: 4px 0;
+}
+
+.cert-actions {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0.75rem;
+    display: flex;
+    justify-content: center;
+    gap: 0.75rem;
 }
 
 .show-cert-btn,
 .credential-link {
     background: rgba(255,255,255,0.08);
-    color: var(--text-primary);
+    color: #fff;
+    font-family: inherit;
+    font-size: 1.2rem;
     font-weight: 600;
+    line-height: inherit;
     text-decoration: none;
+    margin: 0;
     padding: 0.5rem 0.5rem;
     border-radius: 999px;
     display: inline-flex;
@@ -888,6 +1169,7 @@ body.light-mode .cert-view-btn.active {
     gap: 0.6rem;
     white-space: nowrap;
     border: 1px solid var(--card-border);
+    cursor: pointer;
     transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
 }
 
@@ -897,13 +1179,6 @@ body.light-mode .cert-view-btn.active {
     border-color: var(--accent-color);
     transform: translateY(-1px);
 }
-
-body.light-mode .show-cert-btn,
-body.light-mode .credential-link {
-    color: #fff;
-}
-
-
 
 /* ========================================
    END CERTIFICATIONS SECTION STYLES
@@ -980,6 +1255,17 @@ body.light-mode .credential-link {
     flex-grow: 1;
 }
 
+/* Year and team size under the title */
+.project-info .project-meta {
+    margin: -0.6rem 0 1rem;
+    font-size: 1.3rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    line-height: 1.4;
+    opacity: 0.7;
+    flex-grow: 0;
+}
+
 /* Inline pills with balanced wrapping, so a list never ends on a lone pill
    (9 tags used to wrap 4/4/1; now 3/3/3). font-size: 0 removes the whitespace
    between the inline-blocks, and the pills' margins do the spacing. Browsers
@@ -1001,6 +1287,15 @@ body.light-mode .credential-link {
     font-weight: 500;
 }
 
+/* The light card fill is mostly white, so a white border vanished over the
+   pale centre of the background. */
+body.light-mode .project-card,
+body.light-mode .project-card-compact,
+body.light-mode .skill-card,
+body.light-mode .about-awards li {
+    border-color: rgba(28, 42, 58, 0.12);
+}
+
 body.light-mode .project-tech-list span {
     background-color: #e0e0e0;
     color: #333;
@@ -1013,24 +1308,21 @@ body.light-mode .project-tech-list span {
 }
 
 .project-button {
-    background-color: var(--accent-color);
-    color: #000;
+    background-color: var(--accent-fill);
+    color: var(--on-accent);
     padding: 1rem 2rem;
     border-radius: 8px;
     text-decoration: none;
     font-weight: bold;
     font-size: 1.6rem;
     text-align: center;
-    transition: background-color 0.2s ease;
+    /* same hover as the CV button */
+    transition: opacity 0.2s ease, transform 0.2s ease;
 }
 
 .project-button:hover {
-    opacity: 0.9;
-}
-
-body.light-mode .project-button {
-    color: #FFF;
-    font-weight: 700;
+    opacity: 0.85;
+    transform: translateY(-2px);
 }
 
 /* Three buttons need ~380px at the standard padding but a desktop card has
@@ -1069,6 +1361,22 @@ body.light-mode .project-button {
     gap: 2rem;
 }
 
+/* The email tooltip never shows on touch screens, so the address is also
+   written out. */
+#contact .contact-email {
+    margin: 2rem auto 0;
+    font-size: 1.6rem;
+}
+
+.contact-email a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    border-bottom: 1px solid currentColor;
+    padding-bottom: 1px;
+}
+
+.contact-email a:hover { color: var(--accent-color); }
+
 .social-link {
     display: flex;
     justify-content: center;
@@ -1082,28 +1390,22 @@ body.light-mode .project-button {
     transition: all 0.3s ease;
 }
 
-.social-link i {
+.social-link .icon {
     color: var(--text-primary);
     font-size: 2.8rem;
     transition: color 0.3s ease;
 }
 
 .social-link:hover {
-    background-color: var(--accent-color);
-    border-color: var(--accent-color);
+    background-color: var(--accent-fill);
+    border-color: var(--accent-fill);
 }
 
-.social-link:hover i {
-    color: #FFF;
+.social-link:hover .icon {
+    color: var(--on-accent);
 }
 
 /* --- Theme Toggle Switch --- */
-.nav-container {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
 .theme-switch-wrapper {
     display: flex;
     align-items: center;
@@ -1121,9 +1423,7 @@ body.light-mode .project-button {
     border-radius: 50%;
     display: inline-block;
     position: relative;
-    /* Now a <button> for keyboard access — strip the UA chrome so it stays
-       visually identical to the old <i>. font-family is deliberately NOT set
-       here, so the .fas Font Awesome family still applies. */
+    /* A <button> for keyboard access — strip the UA chrome. */
     background: none;
     border: none;
     line-height: 1;
@@ -1131,10 +1431,12 @@ body.light-mode .project-button {
     appearance: none;
 }
 
-/* Icon is driven by the theme class rather than by swapping classes in JS,
+/* Icon is driven by the theme class rather than by swapping markup in JS,
    so it cannot flash the wrong glyph before scripts run. */
-#theme-toggle::before { content: "\f186"; }          /* fa-moon */
-body.light-mode #theme-toggle::before { content: "\f185"; }  /* fa-sun */
+#theme-toggle .icon { display: block; }
+#theme-toggle .icon-sun,
+body.light-mode #theme-toggle .icon-moon { display: none; }
+body.light-mode #theme-toggle .icon-sun { display: block; }
 
 #theme-toggle::after {
     bottom: auto;
@@ -1184,6 +1486,19 @@ body.light-mode #theme-toggle:hover {
     text-align: center;
     letter-spacing: 1px;
     margin: 0 0 0;
+}
+
+/* The line never wraps inside a role. Where it can't fit on one line it
+   breaks before the last role, and that separator dot is dropped. */
+.about-roles span { white-space: nowrap; }
+
+@media screen and (max-width: 500px) {
+    .about-roles .role-break { display: block; height: 0; overflow: hidden; }
+}
+
+/* Small phones: keep "Software Engineer · AI Engineering" on one line. */
+@media screen and (max-width: 374px) {
+    .about-roles { letter-spacing: 0; }
 }
 
 @media screen and (max-width: 768px) {
@@ -1419,7 +1734,8 @@ body.light-mode #stars3 { animation-duration: 25s; }
     font-size: 2.4rem;
 }
 
-.nav div.main_list ul li a:hover {
+.nav div.main_list ul li a:hover,
+.nav div.main_list ul li a.is-active {
     color: var(--accent-color);
 }
 
@@ -1528,7 +1844,8 @@ body.light-mode #stars3 { animation-duration: 25s; }
         color: var(--nav-text);
     }
 
-    .nav div.main_list ul li a:hover {
+    .nav div.main_list ul li a:hover,
+    .nav div.main_list ul li a.is-active {
         color: var(--accent-color);
     }
 
@@ -1566,39 +1883,30 @@ body.light-mode #stars3 { animation-duration: 25s; }
 }
 
 .navTrigger i:nth-child(1) {
-    -webkit-animation: outT 0.8s backwards;
     animation: outT 0.8s backwards;
-    -webkit-animation-direction: reverse;
     animation-direction: reverse;
 }
 
 .navTrigger i:nth-child(2) {
     margin: 5px 0;
-    -webkit-animation: outM 0.8s backwards;
     animation: outM 0.8s backwards;
-    -webkit-animation-direction: reverse;
     animation-direction: reverse;
 }
 
 .navTrigger i:nth-child(3) {
-    -webkit-animation: outBtm 0.8s backwards;
     animation: outBtm 0.8s backwards;
-    -webkit-animation-direction: reverse;
     animation-direction: reverse;
 }
 
 .navTrigger.active i:nth-child(1) {
-    -webkit-animation: inT 0.8s forwards;
     animation: inT 0.8s forwards;
 }
 
 .navTrigger.active i:nth-child(2) {
-    -webkit-animation: inM 0.8s forwards;
     animation: inM 0.8s forwards;
 }
 
 .navTrigger.active i:nth-child(3) {
-    -webkit-animation: inBtm 0.8s forwards;
     animation: inBtm 0.8s forwards;
 }
 
@@ -1615,9 +1923,6 @@ body.light-mode #stars3 { animation-duration: 25s; }
     border-radius: 4px;
 }
 
-.card-wrapper:focus-visible {
-    outline-offset: 6px;
-}
 
 /* ========================================
    REDUCED MOTION
@@ -1713,8 +2018,5 @@ body.light-mode [data-tooltip]::after {
 @keyframes inBtm { 0% { transform: translateY(0px) rotate(0deg); } 50% { transform: translateY(-9px) rotate(0deg); } 100% { transform: translateY(-9px) rotate(135deg); } }
 @keyframes outBtm { 0% { transform: translateY(0px) rotate(0deg); } 50% { transform: translateY(-9px) rotate(0deg); } 100% { transform: translateY(-9px) rotate(135deg); } }
 
-.myH2 { text-align:center; font-size: 4rem; }
-.myP { text-align: justify; padding-left:15%; padding-right:15%; font-size: 20px; }
-@media all and (max-width:700px){ .myP { padding:2%; } }
 /* The ring sits closer to its heading than a flat grid needs to. */
 #tech-stack h2 { margin-bottom: 1rem; }

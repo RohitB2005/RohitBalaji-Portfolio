@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex">
+    <title>Page not found - Rohit Balaji</title>
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <!-- Root-relative paths: Vercel serves this page for any unknown URL, at any depth. -->
+    <link rel="stylesheet" href="/style.css">
+    <style>
+        main.not-found {
+            min-height: 100vh;
+            box-sizing: border-box;
+            padding: 0 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+        .not-found h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 500;
+            font-size: 8rem;
+            line-height: 1;
+            margin: 0;
+        }
+        .not-found p { margin: 1.5rem 0 3rem; }
+    </style>
+</head>
+<body>
+    <script>
+        (function () {
+            try {
+                var saved = localStorage.getItem('theme');
+                var light = saved === 'light' ||
+                    (!saved && window.matchMedia('(prefers-color-scheme: light)').matches);
+                if (light) document.body.classList.add('light-mode');
+            } catch (e) { /* storage disabled — keep the default */ }
+        })();
+    </script>
+    <div id="stars"></div>
+    <div id="stars2"></div>
+    <div id="stars3"></div>
+    <main class="not-found">
+        <h1>404</h1>
+        <p>This page doesn't exist.</p>
+        <a class="cv-download-btn" href="/">Back to the portfolio</a>
+    </main>
+</body>
+</html>
